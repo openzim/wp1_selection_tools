@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 WIKI=$1
 CMD=$2
@@ -51,16 +51,17 @@ fi
 
 createDirIfNecessary()
 {
+
   if [ ! -e $1 ]
   then
     mkdir $1
   fi
 }
 
-createDirIfNecessary ./$WIKI
+createDirIfNecessary ./$WIKI/
 createDirIfNecessary ./$WIKI/source
 createDirIfNecessary ./$WIKI/target
-createDirIfNecessary ./$WIKI
+createDirIfNecessary ./$WIKI/
 createDirIfNecessary ./$WIKI/source
 createDirIfNecessary ./$WIKI/target
 
@@ -156,6 +157,7 @@ if [ "$CMD" = "indexes" ]; then
      | gzip -d \
      | tail -n +28 \
      | ./bin/pagelinks_parser2 \
+     | sort -T$TMPDIR -n -t " " -k 1,1 \
      | gzip > ./$WIKI/target/pagelinks_main_sort_by_ids.lst.gz
   fi
 
@@ -194,7 +196,7 @@ if [ "$CMD" = "indexes" ]; then
   else
     cat ./$WIKI/source/$WIKI-latest-redirect.sql.gz \
      | gzip -d \
-     | tail -n +28 \
+     | tail -n +41 \
      | ./bin/redirects_parser \
      | sort -T$TMPDIR -n -t " " -k 1,1 \
      | gzip > ./$WIKI/target/redirects_sort_by_ids.lst.gz
