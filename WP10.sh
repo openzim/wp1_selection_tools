@@ -57,7 +57,8 @@ $LATEST=`ls -1 /public/datasets/public/enwiki|sort|tail -n1` # Latest version
 
 for file in page pagelinks langlinks redirect categorylinks; do
 	ln -fs /public/datasets/public/enwiki/$LATEST/$WIKI-$LATEST-$file.sql.gz \
-		./$WIKI/source/$WIKI-latest-$file.sql.gz 
+		./$WIKI/source/$WIKI-latest-$file.sql.gz
+done
 
 # End CMD = download
 
