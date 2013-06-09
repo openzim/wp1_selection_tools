@@ -53,7 +53,7 @@ fi
 mkdir -p ./$WIKI/source
 mkdir -p ./$WIKI/target
 
-$LATEST=`ls -1 /public/datasets/public/enwiki|sort|tail -n1` # Latest version
+LATEST=`ls -1 /public/datasets/public/enwiki|sort|tail -n1` # Latest version
 
 for file in page pagelinks langlinks redirect categorylinks; do
 	ln -fs /public/datasets/public/enwiki/$LATEST/$WIKI-$LATEST-$file.sql.gz \
