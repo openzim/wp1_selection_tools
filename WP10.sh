@@ -41,53 +41,23 @@ esac
 ####################################
 if [ "$CMD" = "download" ]; then
 
-CURRENT_VERSION=`curl -s http://download.wikimedia.org/$WIKI/latest/$WIKI-latest-abstract.xml-rss.xml | grep "</link>" | tail -n 1 | sed -e 's/<//g' | cut -d "/" -f 5 `
+# This used to download the dumps from download.wikimedia.org, but
+# they're available on Tool Labs already so we just symlink them.
 
-if [ "$CURRENT_VERSION" = '' ];
+if [ ! -e "/public/datasets/public/$WIKI" ];
 then
-    echo "error: no dump are available for this name."
+    echo "error: no dump are available for wiki '$WIKI'."
     exit
 fi
 
-createDirIfNecessary()
-{
+mkdir -p ./$WIKI/source
+mkdir -p ./$WIKI/target
 
-  if [ ! -e $1 ]
-  then
-    mkdir $1
-  fi
-}
+$LATEST=`ls -1 /public/datasets/public/enwiki|sort|tail -n1` # Latest version
 
-createDirIfNecessary ./$WIKI/
-createDirIfNecessary ./$WIKI/source
-createDirIfNecessary ./$WIKI/target
-createDirIfNecessary ./$WIKI/
-createDirIfNecessary ./$WIKI/source
-createDirIfNecessary ./$WIKI/target
-
-if [ -e ./$WIKI/date ]
-then
-    LAST_VERSION=`cat ./$WIKI/date`
-    if [ $LAST_VERSION != $CURRENT_VERSION ] ; 
-        then
-        rm ./$WIKI/date
-        rm ./$WIKI/source/* >& /dev/null
-    fi
-fi
-
-echo $CURRENT_VERSION > ./$WIKI/date
-
-## GET SQL DUMPS FROM download.wikimedia.org
-wget -nc --continue -O ./$WIKI/source/$WIKI-latest-page.sql.gz \
-      http://download.wikimedia.org/$WIKI/latest/$WIKI-latest-page.sql.gz
-wget -nc --continue -O ./$WIKI/source/$WIKI-latest-pagelinks.sql.gz  \
-      http://download.wikimedia.org/$WIKI/latest/$WIKI-latest-pagelinks.sql.gz
-wget -nc --continue -O ./$WIKI/source/$WIKI-latest-langlinks.sql.gz \
-      http://download.wikimedia.org/$WIKI/latest/$WIKI-latest-langlinks.sql.gz
-wget -nc --continue -O ./$WIKI/source/$WIKI-latest-redirect.sql.gz \
-      http://download.wikimedia.org/$WIKI/latest/$WIKI-latest-redirect.sql.gz
-wget -nc --continue -O ./$WIKI/source/$WIKI-latest-categorylinks.sql.gz \
-      http://download.wikimedia.org/$WIKI/latest/$WIKI-latest-categorylinks.sql.gz
+for file in page pagelinks langlinks redirect categorylinks; do
+	ln -fs /public/datasets/public/enwiki/$LATEST/$WIKI-$LATEST-$file.sql.gz \
+		./$WIKI/source/$WIKI-latest-$file.sql.gz 
 
 # End CMD = download
 
