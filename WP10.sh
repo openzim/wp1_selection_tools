@@ -67,21 +67,27 @@ fi
 ####################################
 if [ "$CMD" = "indexes" ]; then
 
-function build_namespace_indexes() {
-	namespace=$1;
-	name=$2;
+function pipe_query_to_gzip() {
+	query=$1
+	file=$2
 	
-	echo ./$WIKI/target/${name}_pages_sort_by_ids.lst.gz
-	if [ -e ./$WIKI/target/${name}_pages_sort_by_ids.lst.gz ]; then
+	echo ./$WIKI/target/$file.gz
+	if [ -e ./$WIKI/target/$file.gz ]; then
 		echo "...file already exists"
-	else 
-		# XXX BEWARE: This query was imputed based on what the old program seemed to be trying to do.
-		# It may not be correct; we'll see what happens later on.
-		echo "SELECT page_id, page_namespace, page_title, page_is_redirect FROM page WHERE page_namespace = $namespace ORDER BY page_id ASC;" |
-		 mysql --defaults-file=~/replica.my.cnf -N -h ${WIKI}.labsdb ${WIKI}_p |
+	else
+		mysql --defaults-file=~/replica.my.cnf -e "$query" -N -h ${WIKI}.labsdb ${WIKI}_p |
 		 tr '\t' ' ' | # MySQL outputs tab-separated; file needs to be space-separated.
-		 gzip > ./$WIKI/target/${name}_pages_sort_by_ids.lst.gz
+		 gzip > ./$WIKI/target/$file.gz
 	fi
+}
+
+function build_namespace_indexes() {
+	namespace=$1
+	name=$2
+	
+	# XXX BEWARE: This query was imputed based on what the old program seemed to be trying to do.
+	# It may not be correct; we'll see what happens later on.
+	pipe_query_to_gzip ${name}_pages_sort_by_ids.lst "SELECT page_id, page_namespace, page_title, page_is_redirect FROM page WHERE page_namespace = $namespace ORDER BY page_id ASC;"
 }
 
 ## BUILD PAGES INDEXES
