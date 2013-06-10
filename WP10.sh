@@ -77,10 +77,10 @@ function build_namespace_indexes() {
 	else 
 		# XXX BEWARE: This query was imputed based on what the old program seemed to be trying to do.
 		# It may not be correct; we'll see what happens later on.
-		echo "SELECT page_id, page_namespace, page_title, page_is_redirect FROM page WHERE page_namespace = $namespace ORDER BY page_id ASC;" \
-		 | mysql -B --defaults-file=~/replica.my.cnf -h ${WIKI}.labsdb ${WIKI}_p \
-		 | tr '\t' ' ' \ # MySQL outputs tab-separated; file needs to be space-separated.
-		 | gzip > ./$WIKI/target/${name}_pages_sort_by_ids.lst.gz
+		echo "SELECT page_id, page_namespace, page_title, page_is_redirect FROM page WHERE page_namespace = $namespace ORDER BY page_id ASC;" |
+		 mysql -B --defaults-file=~/replica.my.cnf -h ${WIKI}.labsdb ${WIKI}_p |
+		 tr '\\t' ' ' | # MySQL outputs tab-separated; file needs to be space-separated.
+		 gzip > ./$WIKI/target/${name}_pages_sort_by_ids.lst.gz
 	fi
 }
 
