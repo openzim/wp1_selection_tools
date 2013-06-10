@@ -113,17 +113,7 @@ build_namespace_indexes 14 categories
 #fi
 
 ## BUILD PAGELINKS COUNTS
-  echo ./$WIKI/target/pagelinks_main_sort_by_ids.lst.gz
-  if [ -e ./$WIKI/target/pagelinks_main_sort_by_ids.lst.gz ]; then 
-    echo "...file already exists"
-  else
-    cat ./$WIKI/source/$WIKI-latest-pagelinks.sql.gz \
-     | gzip -d \
-     | tail -n +28 \
-     | ./bin/pagelinks_parser2 \
-     | sort -T$TMPDIR -n -t " " -k 1,1 \
-     | gzip > ./$WIKI/target/pagelinks_main_sort_by_ids.lst.gz
-  fi
+pipe_query_to_gzip "SELECT pl_from, pl_title FROM pagelinks ORDER BY pl_from ASC;" pagelinks_main_sort_by_ids.lst
 
   echo ./$WIKI/target/pagelinks.counts.lst.gz 
   if [ -e ./$WIKI/target/pagelinks.counts.lst.gz ]; then 
