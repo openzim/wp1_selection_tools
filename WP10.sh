@@ -75,7 +75,8 @@ function pipe_query_to_gzip() {
 	if [ -e ./$WIKI/target/$file.gz ]; then
 		echo "...file already exists"
 	else
-		mysql --defaults-file=~/replica.my.cnf -e "$query" -N -h ${WIKI}.labsdb ${WIKI}_p |
+		# --quick option prevents out-of-memory errors
+		mysql --defaults-file=~/replica.my.cnf --quick -e "$query" -N -h ${WIKI}.labsdb ${WIKI}_p |
 		 tr '\t' ' ' | # MySQL outputs tab-separated; file needs to be space-separated.
 		 gzip > ./$WIKI/target/$file.gz
 	fi
