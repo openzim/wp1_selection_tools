@@ -87,7 +87,7 @@ function build_namespace_indexes() {
 	
 	# XXX BEWARE: This query was imputed based on what the old program seemed to be trying to do.
 	# It may not be correct; we'll see what happens later on.
-	pipe_query_to_gzip ${name}_pages_sort_by_ids.lst "SELECT page_id, page_namespace, page_title, page_is_redirect FROM page WHERE page_namespace = $namespace ORDER BY page_id ASC;"
+	pipe_query_to_gzip "SELECT page_id, page_namespace, page_title, page_is_redirect FROM page WHERE page_namespace = $namespace ORDER BY page_id ASC;" ${name}_pages_sort_by_ids.lst
 }
 
 ## BUILD PAGES INDEXES
