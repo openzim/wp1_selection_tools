@@ -55,7 +55,7 @@ mkdir -p ./$WIKI/target
 
 LATEST=`ls -1 /public/datasets/public/$WIKI|sort|tail -n1` # Latest version
 
-for file in page pagelinks langlinks redirect categorylinks; do
+for file in pagelinks langlinks redirect categorylinks; do
 	ln -fs /public/datasets/public/$WIKI/$LATEST/$WIKI-$LATEST-$file.sql.gz \
 		./$WIKI/source/$WIKI-latest-$file.sql.gz
 done
@@ -67,45 +67,32 @@ fi
 ####################################
 if [ "$CMD" = "indexes" ]; then
 
+function build_namespace_indexes() {
+	namespace=$1;
+	name=$2;
+	
+	echo ./$WIKI/target/${name}_pages_sort_by_ids.lst.gz
+	if [ -e ./$WIKI/target/${name}_pages_sort_by_ids.lst.gz ]; then
+		echo "...file already exists"
+	else 
+		# XXX BEWARE: This query was imputed based on what the old program seemed to be trying to do.
+		# It may not be correct; we'll see what happens later on.
+		echo "SELECT page_id, page_namespace, page_title, page_is_redirect FROM page WHERE page_namespace = $namespace ORDER BY page_id ASC;" |
+		 mysql --defaults-file=~/replica.my.cnf -N -h ${WIKI}.labsdb ${WIKI}_p |
+		 tr '\t' ' ' | # MySQL outputs tab-separated; file needs to be space-separated.
+		 gzip > ./$WIKI/target/${name}_pages_sort_by_ids.lst.gz
+	fi
+}
+
 ## BUILD PAGES INDEXES
-  echo ./$WIKI/target/main_pages_sort_by_ids.lst.gz
-  if [ -e ./$WIKI/target/main_pages_sort_by_ids.lst.gz ]; then
-    echo "...file already exists"
-  else 
-    cat ./$WIKI/source/$WIKI-latest-page.sql.gz | gzip -d | tail -n +38 \
-     | ./bin/pages_parser \
-     | egrep "^[0-9]+ 0 " \
-     | sort -T$TMPDIR -n -t " " -k 1,1 \
-     | gzip > ./$WIKI/target/main_pages_sort_by_ids.lst.gz
-  fi
+build_namespace_indexes 0 main
 
 ## BUILD TALK INDEXES
-  echo  ./$WIKI/target/talk_pages_sort_by_ids.lst.gz
-  if [ -e ./$WIKI/target/talk_pages_sort_by_ids.lst.gz ]; then 
-    echo "...file already exists"
-  else  
-    cat ./$WIKI/source/$WIKI-latest-page.sql.gz \
-     | gzip -d | tail -n +38 \
-     | ./bin/pages_parser \
-     | egrep "^[0-9]+ 1 " \
-     | sort -T$TMPDIR -n -t " " -k 1,1 \
-     | gzip > ./$WIKI/target/talk_pages_sort_by_ids.lst.gz
-  fi
+build_namespace_indexes 1 talk
 
 # Categories may not be needed, so to save time they are disabled by default
 ## BUILD CATEGORIES INDEXES
-#  echo ./$WIKI/target/categories_sort_by_ids.lst.gz
-#  if [ -e ./$WIKI/target/categories_sort_by_ids.lst.gz ]; then
-#    echo "...file already exists"
-#  else
-#    cat ./$WIKI/source/$WIKI-latest-page.sql.gz \
-#     | gzip -d \
-#     | tail -n +38 \
-#     | ./bin/pages_parser  \
-#     | egrep "^[0-9]+ 14 " \
-#     | sort -T$TMPDIR -n -t " " -k 1,1 \
-#     | gzip > ./$WIKI/target/categories_sort_by_ids.lst.gz
-#  fi
+build_namespace_indexes 14 categories
 
 ## BUILD PAGELINKS INDEXES - replaced by the next two files
 #echo ./$WIKI/target/pagelinks.lst.gz
