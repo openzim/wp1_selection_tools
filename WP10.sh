@@ -122,30 +122,10 @@ pipe_query_to_gzip "SELECT pl_from, pl_title FROM pagelinks ORDER BY pl_from ASC
 pipe_query_to_gzip "SELECT pl_title, COUNT(*) FROM page, pagelinks WHERE pl_title=page_title AND page_namespace = 0 GROUP BY pl_title HAVING COUNT(*) > 1 ORDER BY pl_title;" pagelinks.counts.lst
 
 ## BUILD LANGLINKS INDEXES
-  echo ./$WIKI/target/langlinks_sort_by_ids.lst.gz
-  if [ -e ./$WIKI/target/langlinks_sort_by_ids.lst.gz ]; then 
-    echo "...file already exists"
-  else
-    cat ./$WIKI/source/$WIKI-latest-langlinks.sql.gz \
-     | gzip -d \
-     | tail -n +28 \
-     | ./bin/langlinks_parser \
-     | sort -T$TMPDIR -n -t " " -k 1,1 \
-     | gzip > ./$WIKI/target/langlinks_sort_by_ids.lst.gz
-  fi
+pipe_query_to_gzip "SELECT ll_from, ll_lang, ll_title FROM langlinks ORDER BY ll_from ASC;" langlinks_sort_by_ids.lst
 
 ## BUILD REDIRECT INDEXES
-  echo ./$WIKI/target/redirects_sort_by_ids.lst.gz
-  if [ -e ./$WIKI/target/redirects_sort_by_ids.lst.gz ]; then 
-    echo "...file already exists"
-  else
-    cat ./$WIKI/source/$WIKI-latest-redirect.sql.gz \
-     | gzip -d \
-     | tail -n +41 \
-     | ./bin/redirects_parser \
-     | sort -T$TMPDIR -n -t " " -k 1,1 \
-     | gzip > ./$WIKI/target/redirects_sort_by_ids.lst.gz
-  fi
+pipe_query_to_gzip "SELECT rd_from, rd_namespace, rd_title FROM redirect ORDER BY rd_from ASC;" redirects_sort_by_ids.lst
 
   echo ./$WIKI/target/redirects_targets.lst.gz 
   if [ -e ./$WIKI/target/redirects_targets.lst.gz ]; then 
