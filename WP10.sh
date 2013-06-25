@@ -116,20 +116,10 @@ build_namespace_indexes 14 categories
 ## BUILD PAGELINKS COUNTS
 pipe_query_to_gzip "SELECT pl_from, pl_title FROM pagelinks ORDER BY pl_from ASC;" pagelinks_main_sort_by_ids.lst
 
-  echo ./$WIKI/target/pagelinks.counts.lst.gz 
-  if [ -e ./$WIKI/target/pagelinks.counts.lst.gz ]; then 
-    echo "...file already exists"
-  else
-  time ( \
-    ./bin/catpagelinks.pl ./$WIKI/target/main_pages_sort_by_ids.lst.gz \
-                        ./$WIKI/target/pagelinks_main_sort_by_ids.lst.gz \
-      | sort -T$TMPDIR -t " " \
-      | uniq -c  \
-      | perl -lane 'print $F[1] . " " . $F[0] if ( $F[0] > 1 );' \
-      | sort -T$TMPDIR \
-      | gzip > ./$WIKI/target/pagelinks.counts.lst.gz 
-    )
-  fi
+# get a list of how many times each page is linked to; only for pages that
+#	exist (pl_title=page_title)
+#	are linked to more than once (HAVING COUNT(*) > 1)
+pipe_query_to_gzip "SELECT pl_title, COUNT(*) FROM page, pagelinks WHERE pl_title=page_title AND page_namespace = 0 GROUP BY pl_title HAVING COUNT(*) > 1 ORDER BY pl_title;" pagelinks.counts.lst
 
 ## BUILD LANGLINKS INDEXES
   echo ./$WIKI/target/langlinks_sort_by_ids.lst.gz
