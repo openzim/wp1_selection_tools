@@ -127,16 +127,21 @@ pipe_query_to_gzip "SELECT ll_from, ll_lang, ll_title FROM langlinks ORDER BY ll
 ## BUILD REDIRECT INDEXES
 pipe_query_to_gzip "SELECT rd_from, rd_namespace, rd_title FROM redirect ORDER BY rd_from ASC;" redirects_sort_by_ids.lst
 
-  echo ./$WIKI/target/redirects_targets.lst.gz 
-  if [ -e ./$WIKI/target/redirects_targets.lst.gz ]; then 
-    echo "...file already exists"
-  else
-    perl bin/join_redirects.pl ./$WIKI/target/main_pages_sort_by_ids.lst.gz \
-                               ./$WIKI/target/redirects_sort_by_ids.lst.gz \
-                        ./$WIKI/target/pagelinks_main_sort_by_ids.lst.gz \
-    | sort -T$TMPDIR \
-    | gzip > ./$WIKI/target/redirects_targets.lst.gz
-  fi
+# Find redirect targets by looking in the redirect table, falling back to
+# pagelinks if that fails.
+pipe_query_to_gzip "SELECT page_title,
+        IF ( rd_from = page_id,
+            rd_title,
+        /*ELSE*/IF (pl_from = page_id,
+            pl_from,
+        /*ELSE*/
+            NULL -- Can't happen, due to WHERE clause below
+        ))
+    FROM page, redirect, pagelinks
+    WHERE (rd_from = page_id OR pl_from = page_id)
+        AND page_is_redirect = 1
+        AND page_namespace = 0 /* main */
+    ORDER BY page_id ASC;" redirects_targets.lst # TODO does this stuff *really* need to be sorted?
 
 ## Commented out because it's very large, but may not be needed
 ## BUILD CATEGORYLINKS INDEXES
