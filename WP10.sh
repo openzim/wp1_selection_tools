@@ -161,16 +161,7 @@ pipe_query_to_gzip "SELECT page_title,
 pipe_query_to_gzip "SELECT page_title, COUNT(*) FROM page, langlinks WHERE ll_from=page_id AND page_namespace = 0 GROUP BY page_id ORDER BY page_title ASC;" langlinks.counts.lst
 
 ## BUILD LIST OF MAIN PAGES
-  echo ./$WIKI/target/main_pages.lst.gz 
-  if [ -e  ./$WIKI/target/main_pages.lst.gz ]; then 
-    echo "...file already exists"
-  else
-    cat ./$WIKI/target/main_pages_sort_by_ids.lst.gz \
-     | gzip -d \
-     | perl -lane 'print $F[2]' \
-     | sort -T$TMPDIR -t " " \
-     | gzip > ./$WIKI/target/main_pages.lst.gz
-  fi
+pipe_query_to_gzip "SELECT page_title FROM page ORDER BY page_title ASC;" main_pages.lst
 
 # END if [ "$CMD" = "indexes" ];
 fi  
