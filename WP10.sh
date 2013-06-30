@@ -102,16 +102,7 @@ build_namespace_indexes 1 talk
 build_namespace_indexes 14 categories
 
 ## BUILD PAGELINKS INDEXES - replaced by the next two files
-#echo ./$WIKI/target/pagelinks.lst.gz
-#if [ -e ./$WIKI/target/pagelinks.lst.gz ]; then 
-#  echo "...file already exists"
-#else
-#  cat ./$WIKI/source/$WIKI-latest-pagelinks.sql.gz \
-#   | gzip -d \
-#   | tail -n +28 \
-#   | ./bin/pagelinks_parser \
-#   | gzip > ./$WIKI/target/pagelinks.lst.gz
-#fi
+#pipe_query_to_gzip "SELECT pl_from, pl_namespace, pl_title FROM pagelinks;" pagelinks.lst.gz
 
 ## BUILD PAGELINKS COUNTS
 pipe_query_to_gzip "SELECT pl_from, pl_title FROM pagelinks ORDER BY pl_from ASC;" pagelinks_main_sort_by_ids.lst
