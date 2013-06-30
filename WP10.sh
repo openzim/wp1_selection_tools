@@ -22,7 +22,7 @@ usage()
 {
     echo "Usage: WP1.sh <wikiname> <command>"
     echo "  <wikiname> - such as enwiki, frwiki, ..."
-    echo "  <command>  can be 'download', 'indexes', or 'counts'"
+    echo "  <command>  can be 'indexes' or 'counts'"
     exit
 }
 
@@ -33,36 +33,9 @@ fi
 
 case $CMD in
   indexes)   echo "Making indexes for $WIKI"  ;;
-  download)  echo "Downloading files for $WIKI" ;;
   counts)    echo "Making overall counts for $WIKI"   ;;
   *)         usage                ;;
 esac
-
-####################################
-if [ "$CMD" = "download" ]; then
-
-# This used to download the dumps from download.wikimedia.org, but
-# they're available on Tool Labs already so we just symlink them.
-
-if [ ! -e "/public/datasets/public/$WIKI" ];
-then
-    echo "error: no dump are available for wiki '$WIKI'."
-    exit
-fi
-
-mkdir -p ./$WIKI/source
-mkdir -p ./$WIKI/target
-
-LATEST=`ls -1 /public/datasets/public/$WIKI|sort|tail -n1` # Latest version
-
-for file in pagelinks langlinks redirect categorylinks; do
-	ln -fs /public/datasets/public/$WIKI/$LATEST/$WIKI-$LATEST-$file.sql.gz \
-		./$WIKI/source/$WIKI-latest-$file.sql.gz
-done
-
-# End CMD = download
-
-fi
 
 ####################################
 if [ "$CMD" = "indexes" ]; then
