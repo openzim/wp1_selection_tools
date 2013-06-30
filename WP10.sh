@@ -136,17 +136,7 @@ pipe_query_to_gzip "SELECT page_title,
 
 ## Commented out because it's very large, but may not be needed
 ## BUILD CATEGORYLINKS INDEXES
-#echo ./$WIKI/target/categorylinks_sort_by_ids.lst.gz
-#if [ -e ./$WIKI/target/categorylinks_sort_by_ids.lst.gz ]; then 
-#  echo "...file already exists"
-#else
-#cat ./$WIKI/source/$WIKI-latest-categorylinks.sql.gz  \
-#  | gzip -d \
-#  | tail -n +28 \
-#  | ./bin/categorylinks_parser \
-#  | sort -T$TMPDIR -n -t " " -k 1,1 \
-#  | gzip > ./$WIKI/target/categorylinks_sort_by_ids.lst.gz
-#fi
+#pipe_query_to_gzip "SELECT cl_from, cl_to FROM categorylinks ORDER BY cl_from ASC;" categorylinks_sort_by_ids.lst
 
 ## BUILD LANGLINKS COUNTS
 pipe_query_to_gzip "SELECT page_title, COUNT(*) FROM page, langlinks WHERE ll_from=page_id AND page_namespace = 0 GROUP BY page_id ORDER BY page_title ASC;" langlinks.counts.lst
