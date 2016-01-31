@@ -98,7 +98,7 @@ if [ "$CMD" = "indexes" ]; then
 		    IF ( rd_from = page_id,
 		        rd_title,
 		    /*ELSE*/IF (pl_from = page_id,
-		        pl_from,
+		        pl_title,
 		    /*ELSE*/
 		        NULL -- Can't happen, due to WHERE clause below
 		    ))
