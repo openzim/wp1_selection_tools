@@ -26,7 +26,7 @@ usage()
 {
     echo "Usage: WP1.sh <wikiname> <command>"
     echo "  <wikiname> - such as enwiki, frwiki, ..."
-    echo "  <command>  can be 'indexes', 'counts' or 'upload'"
+    echo "  <command>  can be 'all', 'indexes', 'counts' or 'upload'"
     exit
 }
 
@@ -39,11 +39,13 @@ case $CMD in
   indexes)   echo "Making indexes for $WIKI"  ;;
   counts)    echo "Making overall counts for $WIKI"   ;;
   upload)    echo "Upload WP1 indexes * counts to wp1.kiwix.org"   ;;
+  clean)     echo "Delete target directory"   ;;
+  all)       echo "Make all steps"   ;;
   *)         usage                ;;
 esac
 
 ####################################
-if [ "$CMD" = "indexes" ]; then
+if [[ "$CMD" == "indexes" || "$CMD" == "all" ]]; then
 	mkdir -p ./$DIR/target
 
 	function pipe_query_to_gzip() {
@@ -128,7 +130,7 @@ fi # END if [ "$CMD" = "indexes" ];
 ####################################
 
 ## BUILD OVERALL COUNTS
-if [ "$CMD" = "counts" ]; then 
+if [[ "$CMD" = "counts" ]]; then 
 
   if [ ! -e ./$DIR/source/hitcounts.raw.gz ]; then
    echo 
@@ -152,6 +154,10 @@ if [ "$CMD" = "counts" ]; then
   fi
 fi 
 
-if [ "$CMD" = "upload" ]; then
+if [[ "$CMD" = "upload" || "$CMD" == "all" ]]; then
   lftp -e "mirror -R $DIR $DIR; bye" -u `cat ftp.credentials` wp1.kiwix.org
+fi
+
+if [[ "$CMD" = "clean" || "$CMD" == "all" ]]; then
+  rm -rf $DIR
 fi
