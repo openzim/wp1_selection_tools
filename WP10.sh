@@ -2,9 +2,13 @@
 
 WIKI=$1
 CMD=$2
+DIR=${WIKI}_`date +"%Y-%m-%d"`
 
 ####################################
 ## CONFIGURATION
+
+# Update PATH
+export PATH=$PATH:./
 
 # Perl and sort(1) have locale issues, which can be avoided 
 # by disabling locale handling entirely. 
@@ -12,7 +16,7 @@ LANG=C
 export LANG
 
 # Used by /bin/sort to store temporary files
-TMPDIR=./$WIKI/target
+TMPDIR=./$DIR/target
 export TMPDIR
 
 ##### END CONFIGURATION
@@ -22,7 +26,7 @@ usage()
 {
     echo "Usage: WP1.sh <wikiname> <command>"
     echo "  <wikiname> - such as enwiki, frwiki, ..."
-    echo "  <command>  can be 'indexes' or 'counts'"
+    echo "  <command>  can be 'indexes', 'counts' or 'upload'"
     exit
 }
 
@@ -34,25 +38,26 @@ fi
 case $CMD in
   indexes)   echo "Making indexes for $WIKI"  ;;
   counts)    echo "Making overall counts for $WIKI"   ;;
+  upload)    echo "Upload WP1 indexes * counts to wp1.kiwix.org"   ;;
   *)         usage                ;;
 esac
 
 ####################################
 if [ "$CMD" = "indexes" ]; then
-	mkdir -p ./$WIKI/target
+	mkdir -p ./$DIR/target
 
 	function pipe_query_to_gzip() {
 		query=$1
 		file=$2
 	
-		echo ./$WIKI/target/$file.gz
-		if [ -e ./$WIKI/target/$file.gz ]; then
+		echo ./$DIR/target/$file.gz
+		if [ -e ./$DIR/target/$file.gz ]; then
 			echo "...file already exists"
 		else
 			# --quick option prevents out-of-memory errors
 			mysql --defaults-file=~/replica.my.cnf --quick -e "$query" -N -h ${WIKI}.labsdb ${WIKI}_p |
 			 tr '\t' ' ' | # MySQL outputs tab-separated; file needs to be space-separated.
-			 gzip > ./$WIKI/target/$file.gz
+			 gzip > ./$DIR/target/$file.gz
 		fi
 	}
 
@@ -125,24 +130,28 @@ fi # END if [ "$CMD" = "indexes" ];
 ## BUILD OVERALL COUNTS
 if [ "$CMD" = "counts" ]; then 
 
-  if [ ! -e ./$WIKI/source/hitcounts.raw.gz ]; then
+  if [ ! -e ./$DIR/source/hitcounts.raw.gz ]; then
    echo 
     echo "Error: You must obtain or create the file hitcounts.raw.gz"
-   echo  "Place it in the directory ./$WIKI/source"
+   echo  "Place it in the directory ./$DIR/source"
     exit
   fi
 
-  echo ./$WIKI/target/counts.lst.gz
-  if [ -e ./$WIKI/target/counts.lst.gz ]; then
+  echo ./$DIR/target/counts.lst.gz
+  if [ -e ./$DIR/target/counts.lst.gz ]; then
     echo "...file already exists"
   else
-    ./bin/merge_counts.pl ./$WIKI/target/main_pages.lst.gz \
-                          ./$WIKI/target/langlinks.counts.lst.gz \
-                          ./$WIKI/target/pagelinks.counts.lst.gz \
-                          ./$WIKI/source/hitcounts.raw.gz \
-     | ./bin/merge_redirects.pl ./$WIKI/target/redirects_targets.lst.gz \
+    ./bin/merge_counts.pl ./$DIR/target/main_pages.lst.gz \
+                          ./$DIR/target/langlinks.counts.lst.gz \
+                          ./$DIR/target/pagelinks.counts.lst.gz \
+                          ./$DIR/source/hitcounts.raw.gz \
+     | ./bin/merge_redirects.pl ./$DIR/target/redirects_targets.lst.gz \
      | sort -T$TMPDIR -t " "\
      | ./bin/merge_tally.pl \
-     | gzip > ./$WIKI/target/counts.lst.gz
+     | gzip > ./$DIR/target/counts.lst.gz
   fi
 fi 
+
+if [ "$CMD" = "upload" ]; then
+  lftp -e "mirror -R $DIR $DIR; bye" -u `cat ftp.credentials` wp1.kiwix.org
+fi
