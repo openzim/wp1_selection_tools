@@ -155,9 +155,11 @@ if [[ "$CMD" = "counts" ]]; then
 fi 
 
 if [[ "$CMD" = "upload" || "$CMD" == "all" ]]; then
+  echo "Upload $DIR to wp1.kiwix.org"
   lftp -e "mirror -R $DIR $DIR; bye" -u `cat ftp.credentials` wp1.kiwix.org
 fi
 
 if [[ "$CMD" = "clean" || "$CMD" == "all" ]]; then
+  echo "Delete directory $DIR"
   rm -rf $DIR
 fi
