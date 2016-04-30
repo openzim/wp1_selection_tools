@@ -97,11 +97,11 @@ pipe_query_to_xz \
 
 echo "Upload $DIR to wp1.kiwix.org"
 DIRNAME=`basename $DIR`
-FTP_USER=`cat ftp.credentials | cut -d, -f1`
-FTP_PASSWORD=`cat ftp.credentials | cut -d, -f2`
+FTP_USER=`cat ${SCRIPT_DIR}/ftp.credentials | cut -d "," -f "1"`
+FTP_PASS=`cat ${SCRIPT_DIR}/ftp.credentials | cut -d "," -f "2"`
 ftp -vinp <<EOF
 open wp1.kiwix.org
-user $FTP_USER $FTP_PASSWORD
+user $FTP_USER $FTP_PASS
 mdel $DIRNAME/*
 mkdir $DIRNAME
 cd $DIRNAME
