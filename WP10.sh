@@ -97,7 +97,19 @@ pipe_query_to_xz \
 
 echo "Upload $DIR to wp1.kiwix.org"
 DIRNAME=`basename $DIR`
-lftp -e "rm -r $DIRNAME ; mirror -R $DIR $DIRNAME ; bye" -u `cat $SCRIPT_DIR/ftp.credentials` wp1.kiwix.org
+FTP_USER=`cat ftp.credentials | cut -d, -f1`
+FTP_PASSWORD=`cat ftp.credentials | cut -d, -f2`
+ftp -vinp <<EOF
+open wp1.kiwix.org
+user $FTP_USER $FTP_PASSWORD
+mdel $DIRNAME/*
+mkdir $DIRNAME
+cd $DIRNAME
+lcd $DIR
+mput *
+close
+bye
+EOF
 
 ######################################################################
 # CLEAN DIRECTORY                                                    # 
