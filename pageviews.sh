@@ -15,7 +15,12 @@ curl -s https://dumps.wikimedia.org/other/pagecounts-ez/merged/ | \
     xml2 | \
     grep "a=.*totals.bz2" | \
     sed "s/.*a=//" | \
-    grep -v pagecounts-2012-01 > \
+    grep -v pagecounts-2012-01 | \
+    grep -v pagecounts-2011 | \
+    grep -v pagecounts-2012 | \
+    grep -v pagecounts-2013 | \
+    grep -v pagecounts-2014 | \
+    grep -v pagecounts-2015 > \
     /tmp/bz2
 
 # Download pageview dump for all project for a month
@@ -35,7 +40,12 @@ do
 done
 
 # Extract the content by filtering by project
-cat /dev/null > pageviews
+if [ ! -f pageviews ]
+then
+    cat /dev/null > pageviews
+fi
+
+OLD_SIZE=`ls -la pageviews | cut -d " " -f5`
 for FILE in `cat /tmp/files | grep NEW | cut -d " " -f1`
 do
     echo "Parsing $FILE..."
@@ -54,6 +64,13 @@ do
     ENTRY_COUNT=`wc pageviews | tr -s ' ' | cut -d " " -f2`
     echo "   'pageviews' has $ENTRY_COUNT entries."
 done
+NEW_SIZE=`ls -la pageviews | cut -d " " -f5`
+
+# Compress the result
+if [ x$OLD_SIZE != x$NEW_SIZE ]
+then
+    cat pageviews | xz -9 > pageviews.xz
+fi
 
 # Clean
 rm /tmp/ns
