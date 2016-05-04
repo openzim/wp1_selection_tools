@@ -13,7 +13,7 @@ SCRIPT_DIR=`dirname $SCRIPT_PATH`
 export PATH=$PATH:$SCRIPT_DIR
 
 # Setup global variables
-DIR=$SCRIPT_DIR/${WIKI}_`date +"%Y-%m-%d"`
+DIR=$SCRIPT_DIR/${WIKI}
 
 # Perl and sort(1) have locale issues, which can be avoided by
 # disabling locale handling entirely.
@@ -90,6 +90,12 @@ pipe_query_to_xz \
 pipe_query_to_xz \
     "SELECT rd_from, rd_title FROM redirect WHERE rd_namespace = 0" \
     redirects "source_page_id target_page_title"
+
+######################################################################
+# SAVE DATE                                                          # 
+######################################################################
+
+echo `date +"%Y-%m-%d"` > ${DIR}/DATE
 
 ######################################################################
 # UPLOAD to wp1.kiwix.org                                            # 
