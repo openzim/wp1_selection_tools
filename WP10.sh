@@ -49,10 +49,11 @@ fi
 # Get namespaces
 NAMESPACES=$TMP/namespaces
 curl -s "https://$WIKI_LANG.wikipedia.org/w/api.php?action=query&meta=siteinfo&siprop=namespaces&formatversion=2&format=xml" | \
-    html2 2> /dev/null | \
-    grep "@canonical" | \
-    sed "s/.*@canonical=//" | \
+    xml2 2> /dev/null | \
+    egrep "@(canonical|ns)=.+" | \
+    sed "s/.*=//" | \
     sed "s/ /_/g" | \
+    sort -u | \
     tr '\n' '|' | \
     sed "s/^/^(/" | \
     sed "s/.\$/):/" > $NAMESPACES
@@ -122,6 +123,9 @@ if [ x$OLD_SIZE != x$NEW_SIZE ]
 then
     cat $PAGEVIEWS | xz -9 > $COMPRESSED_PAGEVIEWS
 fi
+
+# Update README
+echo "pageviews: page_title view_count" >> "$DIR/README"
 
 ######################################################################
 # COMPUTE INDEXES                                                    # 
