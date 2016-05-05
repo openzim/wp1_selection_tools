@@ -47,7 +47,7 @@ fi
 ######################################################################
 
 # Get namespaces
-NAMESPACES=$TMP/namespaces
+NAMESPACES=$TMP/namespaces_$WIKI
 curl -s "https://$WIKI_LANG.wikipedia.org/w/api.php?action=query&meta=siteinfo&siprop=namespaces&formatversion=2&format=xml" | \
     xml2 2> /dev/null | \
     egrep "@(canonical|ns)=.+" | \
@@ -59,7 +59,7 @@ curl -s "https://$WIKI_LANG.wikipedia.org/w/api.php?action=query&meta=siteinfo&s
     sed "s/.\$/):/" > $NAMESPACES
 
 # Get the list of tarball to download
-PAGEVIEW_FILES=$TMP/pageview_files
+PAGEVIEW_FILES=$TMP/pageview_files_$WIKI
 curl -s https://dumps.wikimedia.org/other/pagecounts-ez/merged/ | \
     html2 2> /dev/null | \
     grep "a=.*totals.bz2" | \
@@ -73,7 +73,7 @@ curl -s https://dumps.wikimedia.org/other/pagecounts-ez/merged/ | \
     $PAGEVIEW_FILES
 
 # Download pageview dump for all project for a month
-NEW_PAGEVIEW_FILES=$TMP/new_pageview_files
+NEW_PAGEVIEW_FILES=$TMP/new_pageview_files_$WIKI
 PAGEVIEWS=$TMP/pageviews_$WIKI
 cat /dev/null > $NEW_PAGEVIEW_FILES
 for FILE in `cat $PAGEVIEW_FILES`
