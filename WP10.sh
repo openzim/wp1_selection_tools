@@ -119,10 +119,7 @@ NEW_SIZE=`ls -la $PAGEVIEWS 2> /dev/null | cut -d " " -f5`
 
 # Compress the result
 COMPRESSED_PAGEVIEWS=$DIR/pageviews.xz
-if [ x$OLD_SIZE != x$NEW_SIZE ]
-then
-    cat $PAGEVIEWS | xz -9 > $COMPRESSED_PAGEVIEWS
-fi
+cat $PAGEVIEWS | xz -9 > $COMPRESSED_PAGEVIEWS
 
 # Update README
 echo "pageviews: page_title view_count" >> "$DIR/README"
