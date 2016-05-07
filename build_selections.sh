@@ -17,6 +17,7 @@ export PATH=$PATH:$SCRIPT_DIR
 # Setup global variables
 DIR=$SCRIPT_DIR/${WIKI}_`date +"%Y-%m"`
 TMP=$SCRIPT_DIR/tmp
+README=$DIR/README
 
 # Create directories
 mkdir $DIR &> /dev/null
@@ -122,59 +123,49 @@ COMPRESSED_PAGEVIEWS=$DIR/pageviews.xz
 cat $PAGEVIEWS | xz -9 > $COMPRESSED_PAGEVIEWS
 
 # Update README
-echo "pageviews: page_title view_count" >> "$DIR/README"
+echo "pageviews: page_title view_count" > $README
 
 ######################################################################
 # COMPUTE INDEXES                                                    # 
 ######################################################################
-    
-function pipe_query_to_xz() {
-    
-    # Get function arguments
-    QUERY=$1
-    NAME=$2
-    HEADER=$3
 
-    # Variables
-    FILE=$DIR/$NAME.xz
-    
-    # Update README
-    echo "$NAME: $HEADER" >> "$DIR/README"
-    
-    # Execute SQL request and compress result
-    if [ -e $FILE ]
-    then
-	echo "...$FILE exists already"
-    else
-	echo "Piping SQL following query to $FILE"
-	echo "    $QUERY"
-	echo "    ..."
-	mysql --defaults-file=~/replica.my.cnf --quick -e "$QUERY" -N -h ${WIKI}.labsdb ${WIKI}_p |
-	xz -9 > $FILE
-    fi
-}
-
-echo "Gather data"
+echo "Gathering wiki data..."
 
 # Pages
-pipe_query_to_xz \
+echo "pages: page_id page_title is_redirect" >> $README
+mysql --defaults-file=~/replica.my.cnf --quick -e \
     "SELECT page_id, page_title, page_is_redirect FROM page WHERE page_namespace = 0" \
-    pages "page_id page_title is_redirect"
+    -N -h ${WIKI}.labsdb ${WIKI}_p | xz -9 > $DIR/pages.xz
 
 # Page links
-pipe_query_to_xz \
+echo "pagelinks: source_page_id target_page_title" >> $README
+mysql --defaults-file=~/replica.my.cnf --quick -e \
     "SELECT pl_from, pl_title FROM pagelinks WHERE pl_namespace = 0 AND pl_from_namespace = 0" \
-    pagelinks "source_page_id target_page_title"
+    -N -h ${WIKI}.labsdb ${WIKI}_p | xz -9 > $DIR/pagelinks.xz
 
 # Language links
-pipe_query_to_xz \
+echo "langlinks: source_page_id language_code target_page_title" >> $README
+mysql --defaults-file=~/replica.my.cnf --quick -e \
     "SELECT ll_from, ll_lang, ll_title FROM langlinks, page WHERE langlinks.ll_from = page.page_id AND page.page_namespace = 0" \
-    langlinks "source_page_id language_code target_page_title"
+    -N -h ${WIKI}.labsdb ${WIKI}_p | xz -9 > $DIR/langlinks.xz
 
 # Redirects
-pipe_query_to_xz \
+echo "redirects: source_page_id target_page_title" >> $README
+mysql --defaults-file=~/replica.my.cnf --quick -e \
     "SELECT rd_from, rd_title FROM redirect WHERE rd_namespace = 0" \
-    redirects "source_page_id target_page_title"
+    -N -h ${WIKI}.labsdb ${WIKI}_p | xz -9 > $DIR/redirects.xz
+
+######################################################################
+# SELECT WP1 evaluations                                             # 
+######################################################################
+
+if [ $WIKI = 'enwiki' ]
+then
+    echo "ratings: page_title project quality importance" >> $README
+    mysql --defaults-file=~/replica.my.cnf --quick -e \
+	"SELECT r_article, r_project, r_quality, r_importance FROM ratings" \
+	-N -h enwiki.labsdb p50380g50494_data | xz -9 > $DIR/ratings.xz
+fi
 
 ######################################################################
 # UPLOAD to wp1.kiwix.org                                            # 
