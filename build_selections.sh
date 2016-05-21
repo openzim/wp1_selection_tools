@@ -109,7 +109,7 @@ do
 	> $PAGEVIEWS.tmp
     cat $PAGEVIEWS $PAGEVIEWS.tmp | \
 	sort -t " " -k1,1 -i | \
-	perl -ne '($title, $count) = split(" ", $_); if ($title eq $last) { $last_count += $count } else { print "$last $last_count\n"; $last=$title; $last_count=$count;}' \
+	perl -ne '($title, $count) = split(" ", $_); if ($title eq $last) { $last_count += $count } else { print "$last\t$last_count\n"; $last=$title; $last_count=$count;}' \
 	> $PAGEVIEWS.new
     mv $PAGEVIEWS.new $PAGEVIEWS
     rm $PAGEVIEWS.tmp
