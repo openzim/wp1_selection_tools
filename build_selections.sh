@@ -119,8 +119,8 @@ done
 NEW_SIZE=`ls -la $PAGEVIEWS 2> /dev/null | cut -d " " -f5`
 
 # Compress the result
-COMPRESSED_PAGEVIEWS=$DIR/pageviews.xz
-cat $PAGEVIEWS | xz -9 > $COMPRESSED_PAGEVIEWS
+COMPRESSED_PAGEVIEWS=$DIR/pageviews.gz
+cat $PAGEVIEWS | gzip -9 > $COMPRESSED_PAGEVIEWS
 
 # Update README
 echo "pageviews: page_title view_count" > $README
@@ -135,25 +135,25 @@ echo "Gathering wiki data..."
 echo "pages: page_id page_title is_redirect" >> $README
 mysql --defaults-file=~/replica.my.cnf --quick -e \
     "SELECT page_id, page_title, page_is_redirect FROM page WHERE page_namespace = 0" \
-    -N -h ${WIKI}.labsdb ${WIKI}_p | xz -9 > $DIR/pages.xz
+    -N -h ${WIKI}.labsdb ${WIKI}_p | gzip -9 > $DIR/pages.gz
 
 # Page links
 echo "pagelinks: source_page_id target_page_title" >> $README
 mysql --defaults-file=~/replica.my.cnf --quick -e \
     "SELECT pl_from, pl_title FROM pagelinks WHERE pl_namespace = 0 AND pl_from_namespace = 0" \
-    -N -h ${WIKI}.labsdb ${WIKI}_p | xz -9 > $DIR/pagelinks.xz
+    -N -h ${WIKI}.labsdb ${WIKI}_p | gzip -9 > $DIR/pagelinks.gz
 
 # Language links
 echo "langlinks: source_page_id language_code target_page_title" >> $README
 mysql --defaults-file=~/replica.my.cnf --quick -e \
     "SELECT ll_from, ll_lang, ll_title FROM langlinks, page WHERE langlinks.ll_from = page.page_id AND page.page_namespace = 0" \
-    -N -h ${WIKI}.labsdb ${WIKI}_p | xz -9 > $DIR/langlinks.xz
+    -N -h ${WIKI}.labsdb ${WIKI}_p | sed 's/ /_/g' | gzip -9 > $DIR/langlinks.gz
 
 # Redirects
 echo "redirects: source_page_id target_page_title" >> $README
 mysql --defaults-file=~/replica.my.cnf --quick -e \
     "SELECT rd_from, rd_title FROM redirect WHERE rd_namespace = 0" \
-    -N -h ${WIKI}.labsdb ${WIKI}_p | xz -9 > $DIR/redirects.xz
+    -N -h ${WIKI}.labsdb ${WIKI}_p | gzip -9 > $DIR/redirects.gz
 
 ######################################################################
 # SELECT WP1 evaluations                                             # 
@@ -164,7 +164,7 @@ then
     echo "ratings: page_title project quality importance" >> $README
     mysql --defaults-file=~/replica.my.cnf --quick -e \
 	"SELECT r_article, r_project, r_quality, r_importance FROM ratings" \
-	-N -h enwiki.labsdb p50380g50494_data | xz -9 > $DIR/ratings.xz
+	-N -h enwiki.labsdb p50380g50494_data | gzip -9 > $DIR/ratings.gz
 fi
 
 ######################################################################
