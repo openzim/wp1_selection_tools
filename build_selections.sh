@@ -109,7 +109,7 @@ do
 	> $PAGEVIEWS.tmp
     cat $PAGEVIEWS $PAGEVIEWS.tmp | \
 	sort -t " " -k1,1 -i | \
-	perl -ne '($title, $count) = split(" ", $_); if ($title eq $last) { $last_count += $count } else { print "$last\t$last_count\n"; $last=$title; $last_count=$count;}' \
+	$PERL -ne '($title, $count) = split(" ", $_); if ($title eq $last) { $last_count += $count } else { print "$last\t$last_count\n"; $last=$title; $last_count=$count;}' \
 	> $PAGEVIEWS.new
     mv $PAGEVIEWS.new $PAGEVIEWS
     rm $PAGEVIEWS.tmp
@@ -118,9 +118,8 @@ do
 done
 NEW_SIZE=`ls -la $PAGEVIEWS 2> /dev/null | cut -d " " -f5`
 
-# Compress the result
-COMPRESSED_PAGEVIEWS=$DIR/pageviews.gz
-cat $PAGEVIEWS | gzip -9 > $COMPRESSED_PAGEVIEWS
+# Copy the result
+cp $PAGEVIEWS $DIR/pageviews
 
 # Update README
 echo "pageviews: page_title view_count" > $README
@@ -135,25 +134,25 @@ echo "Gathering wiki data..."
 echo "pages: page_id page_title is_redirect" >> $README
 mysql --defaults-file=~/replica.my.cnf --quick -e \
     "SELECT page_id, page_title, page_is_redirect FROM page WHERE page_namespace = 0" \
-    -N -h ${WIKI}.labsdb ${WIKI}_p | gzip -9 > $DIR/pages.gz
+    -N -h ${WIKI}.labsdb ${WIKI}_p > $DIR/pages
 
 # Page links
 echo "pagelinks: source_page_id target_page_title" >> $README
 mysql --defaults-file=~/replica.my.cnf --quick -e \
     "SELECT pl_from, pl_title FROM pagelinks WHERE pl_namespace = 0 AND pl_from_namespace = 0" \
-    -N -h ${WIKI}.labsdb ${WIKI}_p | gzip -9 > $DIR/pagelinks.gz
+    -N -h ${WIKI}.labsdb ${WIKI}_p > $DIR/pagelinks
 
 # Language links
 echo "langlinks: source_page_id language_code target_page_title" >> $README
 mysql --defaults-file=~/replica.my.cnf --quick -e \
     "SELECT ll_from, ll_lang, ll_title FROM langlinks, page WHERE langlinks.ll_from = page.page_id AND page.page_namespace = 0" \
-    -N -h ${WIKI}.labsdb ${WIKI}_p | sed 's/ /_/g' | gzip -9 > $DIR/langlinks.gz
+    -N -h ${WIKI}.labsdb ${WIKI}_p | sed 's/ /_/g' > $DIR/langlinks
 
 # Redirects
 echo "redirects: source_page_id target_page_title" >> $README
 mysql --defaults-file=~/replica.my.cnf --quick -e \
     "SELECT rd_from, rd_title FROM redirect WHERE rd_namespace = 0" \
-    -N -h ${WIKI}.labsdb ${WIKI}_p | gzip -9 > $DIR/redirects.gz
+    -N -h ${WIKI}.labsdb ${WIKI}_p > $DIR/redirects
 
 ######################################################################
 # SELECT WP1 evaluations                                             # 
@@ -164,15 +163,22 @@ then
     echo "ratings: page_title project quality importance" >> $README
     mysql --defaults-file=~/replica.my.cnf --quick -e \
 	"SELECT r_article, r_project, r_quality, r_importance FROM ratings" \
-	-N -h enwiki.labsdb p50380g50494_data | gzip -9 > $DIR/ratings.gz
+	-N -h enwiki.labsdb p50380g50494_data > $DIR/ratings
 fi
 
 ######################################################################
-# MERGE lists                                                        # 
+# MERGE lists an compress                                            # 
 ######################################################################
 
 echo "all: page_title page_id pagelinks_count langlinks_count pageviews_count [rating1] [rating2] ..." >> $README
-$SCRIPT_DIR/merge_lists.pl $DIR | gzip -9 > $DIR/all.gz
+$PERL $SCRIPT_DIR/merge_lists.pl $DIR | lzma -9 > $DIR/all.lzma
+cat $DIR/pages | lzma -9 > $DIR/pages.lzma
+cat $DIR/pageviews | lzma -9 > $DIR/pageviews.lzma
+cat $DIR/pagelinks | lzma -9 > $DIR/pagelinks.lzma
+cat $DIR/langlinks | lzma -9 > $DIR/langlinks.lzma
+cat $DIR/redirects | lzma -9 > $DIR/redirects.lzma
+if [ -f $DIR/ratings ] ; then cat $DIR/ratings | lzma -9 > $DIR/ratings.lzma; fi
+rm -f $DIR/ratings $DIR/pages $DIR/pageviews $DIR/pagelinks $DIR/langlinks $DIR/redirects
 
 ######################################################################
 # UPLOAD to wp1.kiwix.org                                            # 
@@ -198,7 +204,6 @@ EOF
 # CLEAN DIRECTORY                                                    # 
 ######################################################################
 
-# Clean
 rm -rf $DIR
 rm $NAMESPACES
 rm $PAGEVIEW_FILES
