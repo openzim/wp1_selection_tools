@@ -171,6 +171,7 @@ fi
 # MERGE lists                                                        # 
 ######################################################################
 
+echo "all: page_title page_id pagelinks_count langlinks_count pageviews_count [rating1] [ratin2] ..." >> $README
 $SCRIPT_DIR/merge_lists.pl $DIR | gzip -9 > $DIR/all.gz
 
 ######################################################################

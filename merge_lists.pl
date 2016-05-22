@@ -3,6 +3,7 @@
 use utf8;
 use strict;
 use warnings;
+use PerlIO::gzip;
 
 my %counts;
 my %id2title;
@@ -15,9 +16,9 @@ if (!-d $directory) {
 }
 
 # Open pages.gz
-my $pagesFile="$directory/pages.gz";
+my $pagesFile = "$directory/pages.gz";
 print STDERR "Reading $pagesFile...\n";
-open(FILE, '<:gzip', $pagesFile) or die("Unable to open file $pagesFile.\n");
+open(FILE, '<:gzip', $pagesFile) or die("Unable to open file $pagesFile\n");
 while(<FILE>) {
     my $line = $_;
     chomp($line);
@@ -28,9 +29,9 @@ while(<FILE>) {
 close(FILE);
 
 # Open pagelinks.gz
-my $pagelinksFile="$directory/pagelinks.gz";
+my $pagelinksFile = "$directory/pagelinks.gz";
 print STDERR "Reading $pagelinksFile...\n";
-open(FILE, '<:gzip', $pagelinksFile) or die("Unable to open file $pagelinksFile.\n");
+open(FILE, '<:gzip', $pagelinksFile) or die("Unable to open file $pagelinksFile\n");
 while(<FILE>) {
     my $line = $_;
     chomp($line);
@@ -40,9 +41,9 @@ while(<FILE>) {
 close(FILE);
 
 # Open langlinks.gz
-my $langlinksFile="$directory/langlinks.gz";
+my $langlinksFile = "$directory/langlinks.gz";
 print STDERR "Reading $langlinksFile...\n";
-open(FILE, '<:gzip', $langlinksFile) or die("Unable to open file $langlinksFile.\n");
+open(FILE, '<:gzip', $langlinksFile) or die("Unable to open file $langlinksFile\n");
 while(<FILE>) {
     my $line = $_;
     chomp($line);
@@ -54,9 +55,9 @@ while(<FILE>) {
 close(FILE);
 
 # Open pageviews.gz
-my $pageviewsFile="$directory/pageviews.gz";
+my $pageviewsFile = "$directory/pageviews.gz";
 print STDERR "Reading $pageviewsFile...\n";
-open(FILE, '<:gzip', $pageviewsFile) or die("Unable to open file $pageviewsFile.\n");
+open(FILE, '<:gzip', $pageviewsFile) or die("Unable to open file $pageviewsFile\n");
 while(<FILE>) {
     my $line = $_;
     chomp($line);
@@ -66,9 +67,9 @@ while(<FILE>) {
 close(FILE);
 
 # Open redirects.gz
-my $redirectsFile="$directory/redirects.gz";
+my $redirectsFile = "$directory/redirects.gz";
 print STDERR "Reading $redirectsFile...\n";
-open(FILE, '<:gzip', $redirectsFile) or die("Unable to open file $redirectsFile.\n");
+open(FILE, '<:gzip', $redirectsFile) or die("Unable to open file $redirectsFile\n");
 while(<FILE>) {
     my $line = $_;
     chomp($line);
@@ -106,15 +107,41 @@ while(<FILE>) {
 }
 close(FILE);
 
+# Open ratings.gz (if exists)
+my $ratingsFile = "$directory/ratings.gz";
+if (-f $ratingsFile) {
+    print STDERR "Reading $ratingsFile...\n";
+    open(FILE, '<:gzip', $ratingsFile) or die("Unable to open file $ratingsFile\n");
+    while(<FILE>) {
+	my $line = $_;
+	chomp($line);
+	my ($pageTitle, $project, $quality, $importance) = split("\t", $line);
+	my $ratingEntry = $project."=".$quality.":".$importance;
+	if (exists($counts{$pageTitle}{"r"})) {
+	    $counts{$pageTitle}{"r"} .= ($counts{$pageTitle}{"r"} ? "\t" : "").$ratingEntry;
+	} else {
+	    $counts{$pageTitle}{"r"} = $ratingEntry;
+	}
+    }
+    close(FILE);
+}
+
 # Print counts
 print STDERR "Printing all counts...\n";
-open(FILE, '<:gzip', $pagesFile) or die("Unable to open file $pagesFile.\n");
+open(FILE, '<:gzip', $pagesFile) or die("Unable to open file $pagesFile\n");
 while(<FILE>) {
     my $line = $_;
     chomp($line);
     my ($pageId, $pageTitle, $isRedirect) = split("\t", $line);
     next if ($isRedirect);
-    print $pageTitle."\t".$pageId."\t".($counts{$pageTitle}{"l"} || "0")."\t".($counts{$pageTitle}{"ll"} || "0")."\t".($counts{$pageTitle}{"v"} || "0")."\n";
+    print
+	$pageTitle."\t".
+	$pageId."\t".
+	($counts{$pageTitle}{"l"} || "0")."\t".
+	($counts{$pageTitle}{"ll"} || "0")."\t".
+	($counts{$pageTitle}{"v"} || "0").
+	(exists($counts{$pageTitle}{"r"}) ? "\t".$counts{$pageTitle}{"r"} : "").
+	"\n";
 }
 close(FILE);
 
