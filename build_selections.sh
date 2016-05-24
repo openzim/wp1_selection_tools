@@ -155,15 +155,20 @@ mysql --defaults-file=~/replica.my.cnf --quick -e \
     -N -h ${WIKI}.labsdb ${WIKI}_p > $DIR/redirects
 
 ######################################################################
-# SELECT WP1 evaluations                                             # 
+# SELECT WP1 ratings                                                 #
 ######################################################################
 
+rm $DIR/ratings
+touch $DIR/ratings
 if [ $WIKI = 'enwiki' ]
 then
     echo "ratings: page_title project quality importance" >> $README
-    mysql --defaults-file=~/replica.my.cnf --quick -e \
-	"SELECT r_article, r_project, r_quality, r_importance FROM ratings" \
-	-N -h enwiki.labsdb p50380g50494_data > $DIR/ratings
+    for IMPORTANCE_RATING in `mysql --defaults-file=~/replica.my.cnf --quick -e "SELECT DISTINCT r_importance FROM ratings" -N -h enwiki.labsdb p50380g50494_data`
+    do
+	mysql --defaults-file=~/replica.my.cnf --quick -e \
+	    "SELECT r_article, r_project, r_quality, r_importance FROM ratings WHERE r_importance = '$IMPORTANCE_RATING'" \
+	    -N -h enwiki.labsdb p50380g50494_data >> $DIR/ratings
+    done
 fi
 
 ######################################################################
