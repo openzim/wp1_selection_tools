@@ -238,7 +238,7 @@ cat $DIR/pagelinks | lzma -9 > $DIR/pagelinks.lzma
 cat $DIR/langlinks | lzma -9 > $DIR/langlinks.lzma
 cat $DIR/redirects | lzma -9 > $DIR/redirects.lzma
 if [ -f $DIR/ratings ] ; then cat $DIR/ratings | lzma -9 > $DIR/ratings.lzma; fi
-#rm -f $DIR/ratings $DIR/pages $DIR/pageviews $DIR/pagelinks $DIR/langlinks $DIR/redirects
+rm -f $DIR/ratings $DIR/pages $DIR/pageviews $DIR/pagelinks $DIR/langlinks $DIR/redirects
 
 ######################################################################
 # UPLOAD to wp1.kiwix.org                                            # 
