@@ -21,8 +21,11 @@ open(FILE, '<', $pagesFile) or die("Unable to open file $pagesFile\n");
 while(<FILE>) {
     my $line = $_;
     chomp($line);
-    my ($pageId, $pageTitle) = split("\t", $line);
+    my ($pageId, $pageTitle, $pageSize, $isRedirect) = split("\t", $line);
     $counts{$pageTitle}{"i"} = $pageId;
+    unless ($isRedirect) {
+	$counts{$pageTitle}{"s"} = $pageSize;
+    }
     $id2title{$pageId} = $pageTitle;
 }
 close(FILE);
@@ -136,6 +139,7 @@ while(<FILE>) {
     print
 	$pageTitle."\t".
 	$pageId."\t".
+	($counts{$pageTitle}{"s"} || "0")."\t".
 	($counts{$pageTitle}{"l"} || "0")."\t".
 	($counts{$pageTitle}{"ll"} || "0")."\t".
 	($counts{$pageTitle}{"v"} || "0").

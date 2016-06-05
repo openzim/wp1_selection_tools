@@ -25,6 +25,7 @@ mkdir $TMP &> /dev/null
 
 # Perl and sort(1) have locale issues, which can be avoided by
 # disabling locale handling entirely.
+PERL=`whereis perl | cut -f2 -d " "`
 LANG=C
 export LANG
 
@@ -125,65 +126,118 @@ cp $PAGEVIEWS $DIR/pageviews
 echo "pageviews: page_title view_count" > $README
 
 ######################################################################
-# COMPUTE INDEXES                                                    # 
+# GATHER pages key values                                            # 
 ######################################################################
 
-echo "Gathering wiki data..."
-
 # Pages
-echo "pages: page_id page_title is_redirect" >> $README
-mysql --defaults-file=~/replica.my.cnf --quick -e \
-    "SELECT page_id, page_title, page_is_redirect FROM page WHERE page_namespace = 0" \
-    -N -h ${WIKI}.labsdb ${WIKI}_p > $DIR/pages
+echo "Gathering pages..."
+echo "pages: page_id page_title page_size is_redirect" >> $README
+rm -f $DIR/pages
+touch $DIR/pages
+NEW_SIZE=0
+UPPER_LIMIT=0;
+while [ 42 ]
+do
+    OLD_SIZE=$NEW_SIZE
+    LOWER_LIMIT=$UPPER_LIMIT
+    UPPER_LIMIT=$((UPPER_LIMIT + 1000000))
+    echo "   from page_id $LOWER_LIMIT to $UPPER_LIMIT..."
+    mysql --defaults-file=~/replica.my.cnf --quick -e \
+        "SELECT page.page_id, page.page_title, revision.rev_len, page.page_is_redirect FROM page, revision WHERE page.page_namespace = 0 AND revision.rev_id = page.page_latest AND page.page_id >= $LOWER_LIMIT AND page.page_id < $UPPER_LIMIT" \
+        -N -h ${WIKI}.labsdb ${WIKI}_p >> $DIR/pages
+    NEW_SIZE=`ls -la $DIR/pages 2> /dev/null | cut -d " " -f5`
+    if [ x$OLD_SIZE = x$NEW_SIZE ]
+    then
+        break
+    fi
+done
 
 # Page links
+echo "Gathering page links..."
 echo "pagelinks: source_page_id target_page_title" >> $README
-mysql --defaults-file=~/replica.my.cnf --quick -e \
-    "SELECT pl_from, pl_title FROM pagelinks WHERE pl_namespace = 0 AND pl_from_namespace = 0" \
-    -N -h ${WIKI}.labsdb ${WIKI}_p > $DIR/pagelinks
+rm -f $DIR/pagelinks
+touch $DIR/pagelinks
+NEW_SIZE=0
+UPPER_LIMIT=0;
+while [ 42 ]
+do
+    OLD_SIZE=$NEW_SIZE
+    LOWER_LIMIT=$UPPER_LIMIT
+    UPPER_LIMIT=$((UPPER_LIMIT + 1000000))
+    echo "   from pl_from from $LOWER_LIMIT to $UPPER_LIMIT..."
+    mysql --defaults-file=~/replica.my.cnf --quick -e \
+	"SELECT pl_from, pl_title FROM pagelinks WHERE pl_namespace = 0 AND pl_from_namespace = 0 AND pl_from >= $LOWER_LIMIT AND pl_from < $UPPER_LIMIT" \
+	-N -h ${WIKI}.labsdb ${WIKI}_p >> $DIR/pagelinks
+    NEW_SIZE=`ls -la $DIR/pagelinks 2> /dev/null | cut -d " " -f5`
+    if [ x$OLD_SIZE = x$NEW_SIZE ]
+    then
+        break
+    fi
+done
 
 # Language links
+echo "Gathering language links..."
 echo "langlinks: source_page_id language_code target_page_title" >> $README
 mysql --defaults-file=~/replica.my.cnf --quick -e \
     "SELECT ll_from, ll_lang, ll_title FROM langlinks, page WHERE langlinks.ll_from = page.page_id AND page.page_namespace = 0" \
     -N -h ${WIKI}.labsdb ${WIKI}_p | sed 's/ /_/g' > $DIR/langlinks
 
 # Redirects
+echo "Gathering redirects..."
 echo "redirects: source_page_id target_page_title" >> $README
 mysql --defaults-file=~/replica.my.cnf --quick -e \
     "SELECT rd_from, rd_title FROM redirect WHERE rd_namespace = 0" \
     -N -h ${WIKI}.labsdb ${WIKI}_p > $DIR/redirects
 
 ######################################################################
-# SELECT WP1 ratings                                                 #
+# GATHER WP1 ratings                                                 #
 ######################################################################
 
-rm $DIR/ratings
+echo "Gathering WP1 ratings..."
+rm -f $DIR/ratings
 touch $DIR/ratings
 if [ $WIKI = 'enwiki' ]
 then
     echo "ratings: page_title project quality importance" >> $README
-    for IMPORTANCE_RATING in `mysql --defaults-file=~/replica.my.cnf --quick -e "SELECT DISTINCT r_importance FROM ratings" -N -h enwiki.labsdb p50380g50494_data`
+
+    echo "Gathering ratings with importance IS NOT NULL..."
+    IMPORTANCES=`mysql --defaults-file=~/replica.my.cnf --quick -e "SELECT DISTINCT r_importance FROM ratings WHERE r_importance IS NOT NULL" -N -h enwiki.labsdb p50380g50494_data | tr '\n' ' ' | sed -e 's/[ ]*$//'`
+    IFS=$' '
+    for IMPORTANCE_RATING in $IMPORTANCES
     do
+	echo "Gathering ratings with importance '$IMPORTANCE_RATING'..."
 	mysql --defaults-file=~/replica.my.cnf --quick -e \
-	    "SELECT r_article, r_project, r_quality, r_importance FROM ratings WHERE r_importance = '$IMPORTANCE_RATING'" \
+	    "SELECT r_article, r_project, r_quality, r_importance FROM ratings WHERE r_importance = \"$IMPORTANCE_RATING\"" \
 	    -N -h enwiki.labsdb p50380g50494_data >> $DIR/ratings
     done
+    unset IFS
+
+    echo "Gathering ratings with importance IS NULL..."
+    mysql --defaults-file=~/replica.my.cnf --quick -e \
+	"SELECT r_article, r_project, r_quality, r_importance FROM ratings WHERE r_importance IS NULL" \
+	-N -h enwiki.labsdb p50380g50494_data >> $DIR/ratings
 fi
 
 ######################################################################
-# MERGE lists an compress                                            # 
+# MERGE lists                                                        #
 ######################################################################
 
-echo "all: page_title page_id pagelinks_count langlinks_count pageviews_count [rating1] [rating2] ..." >> $README
+echo "Merging lists in on file..."
+echo "all: page_title page_id page_size pagelinks_count langlinks_count pageviews_count [rating1] [rating2] ..." >> $README
 $PERL $SCRIPT_DIR/merge_lists.pl $DIR | lzma -9 > $DIR/all.lzma
+
+######################################################################
+# COMPRESS all files                                                 #
+######################################################################
+
+echo "Compressing all files..."
 cat $DIR/pages | lzma -9 > $DIR/pages.lzma
 cat $DIR/pageviews | lzma -9 > $DIR/pageviews.lzma
 cat $DIR/pagelinks | lzma -9 > $DIR/pagelinks.lzma
 cat $DIR/langlinks | lzma -9 > $DIR/langlinks.lzma
 cat $DIR/redirects | lzma -9 > $DIR/redirects.lzma
 if [ -f $DIR/ratings ] ; then cat $DIR/ratings | lzma -9 > $DIR/ratings.lzma; fi
-rm -f $DIR/ratings $DIR/pages $DIR/pageviews $DIR/pagelinks $DIR/langlinks $DIR/redirects
+#rm -f $DIR/ratings $DIR/pages $DIR/pageviews $DIR/pagelinks $DIR/langlinks $DIR/redirects
 
 ######################################################################
 # UPLOAD to wp1.kiwix.org                                            # 
