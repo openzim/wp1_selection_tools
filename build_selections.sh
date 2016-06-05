@@ -200,7 +200,7 @@ if [ $WIKI = 'enwiki' ]
 then
     echo "ratings: page_title project quality importance" >> $README
 
-    echo "Gathering ratings with importance IS NOT NULL..."
+    echo "Gathering importances..."
     IMPORTANCES=`mysql --defaults-file=~/replica.my.cnf --quick -e "SELECT DISTINCT r_importance FROM ratings WHERE r_importance IS NOT NULL" -N -h enwiki.labsdb p50380g50494_data | tr '\n' ' ' | sed -e 's/[ ]*$//'`
     IFS=$' '
     for IMPORTANCE_RATING in $IMPORTANCES
@@ -217,6 +217,7 @@ then
 	"SELECT r_article, r_project, r_quality, r_importance FROM ratings WHERE r_importance IS NULL" \
 	-N -h enwiki.labsdb p50380g50494_data >> $DIR/ratings
 fi
+
 
 ######################################################################
 # MERGE lists                                                        #

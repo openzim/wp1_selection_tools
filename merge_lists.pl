@@ -134,7 +134,7 @@ open(FILE, '<', $pagesFile) or die("Unable to open file $pagesFile\n");
 while(<FILE>) {
     my $line = $_;
     chomp($line);
-    my ($pageId, $pageTitle, $isRedirect) = split("\t", $line);
+    my ($pageId, $pageTitle, $pageSize, $isRedirect) = split("\t", $line);
     next if ($isRedirect);
     print
 	$pageTitle."\t".
