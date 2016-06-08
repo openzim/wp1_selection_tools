@@ -1,0 +1,37 @@
+This tool allows to easily build non-topic centric selections of
+Wikipedia articles.
+
+== Requirements ==
+
+To run it, you need:
+* MANDATORY: a GNU/Linux system
+* MANDATORY: an access to Internet
+* MANDATORY: an access to a Wikipedia database
+* OPTION: an access to enwp10 rating database for Wikipedia in English
+
+== Context ==
+
+Many Wikipedias, in different languages, are over 500.000 articles and
+even if we can provide offline versions with a reasonnable size, this
+is still too much for many devices. That's why we need to build
+offline versions with only a selections with the TOP best articles.
+
+== Principle ==
+
+This tool builds lists of key values (pageviews, links, ...) about
+Wikipedia articles an put them in a directory. One time all this key
+values are gathered, they are upload to http://wp1.kiwix.org/. These
+key values are everything we have as input to build smart selection
+algorithms. To get more detalis about the list, read the README in the
+language based directory.
+
+== Tools ==
+
+* build_biggest_wikipedia_list.sh give you the list of all
+  wikipedia/languages with more than 500.000 entries.
+
+* build_selections.sh takes a language code ('en' for example) as first
+  argument and create the directory with all the key values.
+
+* build_all_selections.sh to build/upload lists for all Wikipedia with
+  more than 500.000 pages.

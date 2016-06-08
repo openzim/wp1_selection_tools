@@ -193,11 +193,13 @@ mysql --defaults-file=~/replica.my.cnf --quick -e \
 # GATHER WP1 ratings                                                 #
 ######################################################################
 
-echo "Gathering WP1 ratings..."
-rm -f $DIR/ratings
-touch $DIR/ratings
+
 if [ $WIKI = 'enwiki' ]
 then
+    echo "Gathering WP1 ratings..."
+    rm -f $DIR/ratings
+    touch $DIR/ratings
+
     echo "ratings: page_title project quality importance" >> $README
 
     echo "Gathering importances..."
