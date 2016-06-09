@@ -140,7 +140,7 @@ while [ 42 ]
 do
     OLD_SIZE=$NEW_SIZE
     LOWER_LIMIT=$UPPER_LIMIT
-    UPPER_LIMIT=$((UPPER_LIMIT + 1000000))
+    UPPER_LIMIT=$((UPPER_LIMIT + 100000))
     echo "   from page_id $LOWER_LIMIT to $UPPER_LIMIT..."
     mysql --defaults-file=~/replica.my.cnf --quick -e \
         "SELECT page.page_id, page.page_title, revision.rev_len, page.page_is_redirect FROM page, revision WHERE page.page_namespace = 0 AND revision.rev_id = page.page_latest AND page.page_id >= $LOWER_LIMIT AND page.page_id < $UPPER_LIMIT" \
@@ -163,7 +163,7 @@ while [ 42 ]
 do
     OLD_SIZE=$NEW_SIZE
     LOWER_LIMIT=$UPPER_LIMIT
-    UPPER_LIMIT=$((UPPER_LIMIT + 1000000))
+    UPPER_LIMIT=$((UPPER_LIMIT + 100000))
     echo "   from pl_from from $LOWER_LIMIT to $UPPER_LIMIT..."
     mysql --defaults-file=~/replica.my.cnf --quick -e \
 	"SELECT pl_from, pl_title FROM pagelinks WHERE pl_namespace = 0 AND pl_from_namespace = 0 AND pl_from >= $LOWER_LIMIT AND pl_from < $UPPER_LIMIT" \
