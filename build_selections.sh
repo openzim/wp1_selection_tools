@@ -163,7 +163,7 @@ while [ 42 ]
 do
     OLD_SIZE=$NEW_SIZE
     LOWER_LIMIT=$UPPER_LIMIT
-    UPPER_LIMIT=$((UPPER_LIMIT + 100000))
+    UPPER_LIMIT=$((UPPER_LIMIT + 10000))
     echo "   from pl_from from $LOWER_LIMIT to $UPPER_LIMIT..."
     mysql --defaults-file=~/replica.my.cnf --quick -e \
 	"SELECT pl_from, pl_title FROM pagelinks WHERE pl_namespace = 0 AND pl_from_namespace = 0 AND pl_from >= $LOWER_LIMIT AND pl_from < $UPPER_LIMIT" \
@@ -251,7 +251,7 @@ DIRNAME=`basename $DIR`
 FTP_USER=`cat ${SCRIPT_DIR}/ftp.credentials | cut -d "," -f "1"`
 FTP_PASS=`cat ${SCRIPT_DIR}/ftp.credentials | cut -d "," -f "2"`
 ftp -vinp <<EOF
-open wp1.kiwix.org
+open wp1.kiwix.org 20
 user $FTP_USER $FTP_PASS
 mdel $DIRNAME/*
 mkdir $DIRNAME
