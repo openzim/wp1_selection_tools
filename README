@@ -38,6 +38,10 @@ directory.
 * add_target_ids_to_pagelinks.pl generates on the output a copy of
   pagelinks with in the last column the the link target page id.
 
+* build_en_vital_articles_list.sh generates a the list Wikipedia in
+  English vital articles
+  (https://en.wikipedia.org/wiki/Wikipedia:Vital_articles)
+
 == Download ==
 
 You can download the output of that scripts directly from
