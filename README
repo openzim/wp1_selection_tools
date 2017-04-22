@@ -19,11 +19,10 @@ offline versions with only a selections with the TOP best articles.
 == Principle ==
 
 This tool builds lists of key values (pageviews, links, ...) about
-Wikipedia articles an put them in a directory. One time all this key
-values are gathered, they are upload to http://wp1.kiwix.org/. These
-key values are everything we have as input to build smart selection
-algorithms. To get more detalis about the list, read the README in the
-language based directory.
+Wikipedia articles and put them in a directory. These key values are
+everything we have as input to build smart selection algorithms. To
+get more detalis about the list, read the README in the language based
+directory.
 
 == Tools ==
 
@@ -38,3 +37,16 @@ language based directory.
 
 * add_target_ids_to_pagelinks.pl generates on the output a copy of
   pagelinks with in the last column the the link target page id.
+
+== Download ==
+
+You can download the output of that scripts directly from
+download.kiwix.org/wp1/ using FTP, HTTP(s) or rsync.
+
+You might be interested by downloading only the last version, here is
+a small command (based on rsync) to retrieve the right directory name.
+
+for ENTRY in `rsync --recursive --list-only download.kiwix.org::download.kiwix.org/wp1/ \
+| tr -s ' ' | cut -d ' ' -f5 | grep wiki | grep -v '/' | sort -r` ; \
+do RADICAL=`echo $ENTRY | sed 's/_20[0-9][0-9]-[0-9][0-9]//g'`; \
+if [[ $LAST != $RADICAL ]] ; then echo $ENTRY ; LAST=$RADICAL ; fi ; done
