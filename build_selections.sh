@@ -34,12 +34,12 @@ export LANG
 ######################################################################
 
 usage() {
-    echo "Usage: WP1.sh <lang>"
+    echo "Usage: $0 <lang>"
     echo "  <lang> - such as en, fr, ..."
     exit
 }
 
-if [ "$WIKI" = '' ]
+if [ "$WIKI_LANG" = '' ]
 then
   usage;
 fi
@@ -193,7 +193,6 @@ mysql --defaults-file=~/replica.my.cnf --quick -e \
 # GATHER WP1 ratings                                                 #
 ######################################################################
 
-
 if [ $WIKI = 'enwiki' ]
 then
     echo "Gathering WP1 ratings..."
@@ -220,7 +219,6 @@ then
 	-N -h enwiki.labsdb p50380g50494_data >> $DIR/ratings
 fi
 
-
 ######################################################################
 # MERGE lists                                                        #
 ######################################################################
@@ -246,27 +244,17 @@ rm -f $DIR/ratings $DIR/pages $DIR/pageviews $DIR/pagelinks $DIR/langlinks $DIR/
 # UPLOAD to wp1.kiwix.org                                            # 
 ######################################################################
 
-echo "Upload $DIR to wp1.kiwix.org"
-DIRNAME=`basename $DIR`
-FTP_USER=`cat ${SCRIPT_DIR}/ftp.credentials | cut -d "," -f "1"`
-FTP_PASS=`cat ${SCRIPT_DIR}/ftp.credentials | cut -d "," -f "2"`
-ftp -vinp <<EOF
-open wp1.kiwix.org 20
-user $FTP_USER $FTP_PASS
-mdel $DIRNAME/*
-mkdir $DIRNAME
-cd $DIRNAME
-lcd $DIR
-mput *
-close
-bye
-EOF
+echo "Upload $DIR to download.kiwix.org"
+scp -r $DIR `cat remote`
 
 ######################################################################
 # CLEAN DIRECTORY                                                    # 
 ######################################################################
 
-rm -rf $DIR
-rm $NAMESPACES
-rm $PAGEVIEW_FILES
-rm $NEW_PAGEVIEW_FILES
+if [ $? -eq 0 ]
+then
+    rm -rf $DIR
+    rm $NAMESPACES
+    rm $PAGEVIEW_FILES
+    rm $NEW_PAGEVIEW_FILES
+fi
