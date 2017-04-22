@@ -190,7 +190,7 @@ mysql --defaults-file=~/replica.my.cnf --quick -e \
     -N -h ${WIKI}.labsdb ${WIKI}_p > $DIR/redirects
 
 ######################################################################
-# GATHER WP1 ratings                                                 #
+# GATHER WP1 ratings for WPEN                                        #
 ######################################################################
 
 if [ $WIKI = 'enwiki' ]
@@ -220,6 +220,18 @@ then
 fi
 
 ######################################################################
+# GATHER Vital Articles for WPEN                                     #
+######################################################################
+
+if [ $WIKI = 'enwiki' ]
+then
+    echo "Gathering vital articles..."
+
+    echo "vital: level page_title" >> $README
+    $SCRIPT_DIR/build_en_vital_articles_list.sh > $DIR/vital
+fi
+
+######################################################################
 # MERGE lists                                                        #
 ######################################################################
 
@@ -238,7 +250,9 @@ cat $DIR/pagelinks | lzma -9 > $DIR/pagelinks.lzma
 cat $DIR/langlinks | lzma -9 > $DIR/langlinks.lzma
 cat $DIR/redirects | lzma -9 > $DIR/redirects.lzma
 if [ -f $DIR/ratings ] ; then cat $DIR/ratings | lzma -9 > $DIR/ratings.lzma; fi
-rm -f $DIR/ratings $DIR/pages $DIR/pageviews $DIR/pagelinks $DIR/langlinks $DIR/redirects
+if [ -f $DIR/vital ] ; then cat $DIR/vital | lzma -9 > $DIR/vital.lzma; fi
+rm -f $DIR/vital $DIR/ratings $DIR/pages $DIR/pageviews \
+    $DIR/pagelinks $DIR/langlinks $DIR/redirects
 
 ######################################################################
 # UPLOAD to wp1.kiwix.org                                            # 
