@@ -4,6 +4,10 @@
 # CONFIGURATION                                                      # 
 ######################################################################
 
+# Stop if any problem
+set -e
+set -o pipefail
+
 # Parse command line
 WIKI_LANG=$1
 WIKI=${WIKI_LANG}wiki
@@ -20,8 +24,8 @@ TMP=$SCRIPT_DIR/tmp
 README=$DIR/README
 
 # Create directories
-mkdir $DIR &> /dev/null
-mkdir $TMP &> /dev/null
+if [ ! -d $DIR ]; then mkdir $DIR &> /dev/null; fi
+if [ ! -d $DIR ]; then mkdir $TMP &> /dev/null; fi
 
 # Perl and sort(1) have locale issues, which can be avoided by
 # disabling locale handling entirely.
