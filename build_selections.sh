@@ -84,7 +84,12 @@ PAGEVIEWS=$TMP/pageviews_$WIKI
 cat /dev/null > $NEW_PAGEVIEW_FILES
 for FILE in `cat $PAGEVIEW_FILES`
 do
-    OLD_SIZE=`ls -la $TMP/$FILE 2> /dev/null | cut -d " " -f5`
+
+    OLD_SIZE=0
+    if [ -f $TMP/$FILE ]
+    then
+	OLD_SIZE=`ls -la $TMP/$FILE 2> /dev/null | cut -d " " -f5`
+    fi
     wget -c https://dumps.wikimedia.org/other/pagecounts-ez/merged/$FILE -O $TMP/$FILE
     NEW_SIZE=`ls -la $TMP/$FILE 2> /dev/null | cut -d " " -f5`
 
