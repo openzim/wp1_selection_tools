@@ -10,8 +10,11 @@ set -o pipefail
 
 # Parse command line
 WIKI_LANG=$1
+WIKI_LANG_SHORT=`echo $WIKI_LANG | sed 's/\(^..\).*/\1/'`
 WIKI=${WIKI_LANG}wiki
 PAGEVIEW_CODE=${WIKI_LANG}.z
+DB_HOST=${WIKI_LANG_SHORT}wiki.labsdb
+DB=`echo ${WIKI} | sed 's/-/_/g'`_p
 
 # Update PATH
 SCRIPT_PATH=$0
@@ -153,7 +156,7 @@ do
     echo "   from page_id $LOWER_LIMIT to $UPPER_LIMIT..."
     mysql --defaults-file=~/replica.my.cnf --quick -e \
         "SELECT page.page_id, page.page_title, revision.rev_len, page.page_is_redirect FROM page, revision WHERE page.page_namespace = 0 AND revision.rev_id = page.page_latest AND page.page_id >= $LOWER_LIMIT AND page.page_id < $UPPER_LIMIT" \
-        -N -h ${WIKI}.labsdb ${WIKI}_p >> $DIR/pages
+        -N -h ${DB_HOST} ${DB} >> $DIR/pages
     NEW_SIZE=`ls -la $DIR/pages 2> /dev/null | cut -d " " -f5`
     if [ x$OLD_SIZE = x$NEW_SIZE ]
     then
@@ -176,7 +179,7 @@ do
     echo "   from pl_from from $LOWER_LIMIT to $UPPER_LIMIT..."
     mysql --defaults-file=~/replica.my.cnf --quick -e \
 	"SELECT pl_from, pl_title FROM pagelinks WHERE pl_namespace = 0 AND pl_from_namespace = 0 AND pl_from >= $LOWER_LIMIT AND pl_from < $UPPER_LIMIT" \
-	-N -h ${WIKI}.labsdb ${WIKI}_p >> $DIR/pagelinks
+	-N -h ${DB_HOST} ${DB} >> $DIR/pagelinks
     NEW_SIZE=`ls -la $DIR/pagelinks 2> /dev/null | cut -d " " -f5`
     if [ x$OLD_SIZE = x$NEW_SIZE ]
     then
@@ -189,14 +192,14 @@ echo "Gathering language links..."
 echo "langlinks: source_page_id language_code target_page_title" >> $README
 mysql --defaults-file=~/replica.my.cnf --quick -e \
     "SELECT ll_from, ll_lang, ll_title FROM langlinks, page WHERE langlinks.ll_from = page.page_id AND page.page_namespace = 0" \
-    -N -h ${WIKI}.labsdb ${WIKI}_p | sed 's/ /_/g' > $DIR/langlinks
+    -N -h ${DB_HOST} ${DB} | sed 's/ /_/g' > $DIR/langlinks
 
 # Redirects
 echo "Gathering redirects..."
 echo "redirects: source_page_id target_page_title" >> $README
 mysql --defaults-file=~/replica.my.cnf --quick -e \
     "SELECT rd_from, rd_title FROM redirect WHERE rd_namespace = 0" \
-    -N -h ${WIKI}.labsdb ${WIKI}_p > $DIR/redirects
+    -N -h ${DB_HOST} ${DB} > $DIR/redirects
 
 ######################################################################
 # GATHER WP1 ratings for WPEN                                        #
