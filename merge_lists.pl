@@ -110,6 +110,50 @@ while(<FILE>) {
 close(FILE);
 
 # Open ratings (if exists)
+
+my %projects;
+my %classes;
+my %evals;
+
+sub revert_hash {
+    my $hash = shift;
+    my %result;
+
+    while (my ($key, $value) = each %$hash) {
+	$result{$value}=$key;
+    }
+
+    \%result;
+}
+
+sub shorten_ratings {
+    my $ratings = shift;
+    my $result = "";
+
+    while ($ratings =~ m/(.+?)=([^:]+):([^\t]+)(\t|)/g) {
+	$result .= ($result ? "\t" : "") .
+	    ($projects{$1} //= scalar(keys(%projects))) . "=" .
+	    ($classes{$2} //= scalar(keys(%classes))) . ":" .
+	    ($evals{$3} //= scalar(keys(%evals)));
+    }
+
+    $result
+}
+
+sub expand_ratings {
+    my $ratings = shift;
+    my $result = "";
+
+    while ($ratings =~ m/(.+?)=([^:]+):([^\t]+)(\t|)/g) {
+	$result .= ($result ? "\t" : "") .
+	    $projects{$1} . "=" .
+	    $classes{$2} . ":" .
+	    $evals{$3};
+    }
+
+    $result
+}
+
 my $ratingsFile = "$directory/ratings";
 if (-f $ratingsFile) {
     print STDERR "Reading $ratingsFile...\n";
@@ -118,7 +162,7 @@ if (-f $ratingsFile) {
 	my $line = $_;
 	chomp($line);
 	my ($pageTitle, $project, $quality, $importance) = split("\t", $line);
-	my $ratingEntry = $project."=".$quality.":".$importance;
+	my $ratingEntry = shorten_ratings($project."=".$quality.":".$importance);
 	if (exists($counts{$pageTitle}{"r"})) {
 	    $counts{$pageTitle}{"r"} .= ($counts{$pageTitle}{"r"} ? "\t" : "").$ratingEntry;
 	} else {
@@ -127,6 +171,10 @@ if (-f $ratingsFile) {
     }
     close(FILE);
 }
+
+%projects = %{revert_hash(\%projects)};
+%classes  = %{revert_hash(\%classes)};
+%evals    = %{revert_hash(\%evals)};
 
 # Print counts
 print STDERR "Printing all counts...\n";
@@ -143,7 +191,7 @@ while(<FILE>) {
 	($counts{$pageTitle}{"l"} || "0")."\t".
 	($counts{$pageTitle}{"ll"} || "0")."\t".
 	($counts{$pageTitle}{"v"} || "0").
-	(exists($counts{$pageTitle}{"r"}) ? "\t".$counts{$pageTitle}{"r"} : "").
+	(exists($counts{$pageTitle}{"r"}) ? "\t".expand_ratings($counts{$pageTitle}{"r"}) : "").
 	"\n";
 }
 close(FILE);
