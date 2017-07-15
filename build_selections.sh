@@ -247,24 +247,34 @@ fi
 # MERGE lists                                                        #
 ######################################################################
 
-echo "Merging lists in on file..."
+echo "Merging lists..."
 echo "all: page_title page_id page_size pagelinks_count langlinks_count pageviews_count [rating1] [rating2] ..." >> $README
-$PERL $SCRIPT_DIR/merge_lists.pl $DIR | lzma -9 > $DIR/all.lzma
+$PERL $SCRIPT_DIR/merge_lists.pl $DIR > $DIR/all
+
+######################################################################
+# COMPUTE scores                                                    #
+######################################################################
+
+echo "Computing scores..."
+echo "scores: page_title score ..." >> $README
+$PERL $SCRIPT_DIR/build_scores.pl $DIR/all | sort -t$'\t' -k2 -n -r > $DIR/scores
 
 ######################################################################
 # COMPRESS all files                                                 #
 ######################################################################
 
 echo "Compressing all files..."
-cat $DIR/pages | lzma -9 > $DIR/pages.lzma
+cat $DIR/pages     | lzma -9 > $DIR/pages.lzma
 cat $DIR/pageviews | lzma -9 > $DIR/pageviews.lzma
 cat $DIR/pagelinks | lzma -9 > $DIR/pagelinks.lzma
 cat $DIR/langlinks | lzma -9 > $DIR/langlinks.lzma
 cat $DIR/redirects | lzma -9 > $DIR/redirects.lzma
+cat $DIR/scores    | lzma -9 > $DIR/scores.lzma
+cat $DIR/all       | lzma -9 > $DIR/all.lzma
 if [ -f $DIR/ratings ] ; then cat $DIR/ratings | lzma -9 > $DIR/ratings.lzma; fi
 if [ -f $DIR/vital ] ; then cat $DIR/vital | lzma -9 > $DIR/vital.lzma; fi
 rm -f $DIR/vital $DIR/ratings $DIR/pages $DIR/pageviews \
-    $DIR/pagelinks $DIR/langlinks $DIR/redirects
+    $DIR/pagelinks $DIR/langlinks $DIR/redirects $DIR/all $DIR/scores
 
 ######################################################################
 # UPLOAD to wp1.kiwix.org                                            # 
