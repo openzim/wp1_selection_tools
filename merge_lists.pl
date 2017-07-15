@@ -7,7 +7,7 @@ use utf8;
 my %counts;
 my %id2title;
 
-# Chef if directory exists
+# Check if directory exists
 my $directory = $ARGV[0] || "";
 if (!-d $directory) {
     print STDERR "Directory '$directory' does not exist. You have to call merge_lists.pl with as argument a directory path with the lists.\n";
