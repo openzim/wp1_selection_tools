@@ -13,8 +13,14 @@ WIKI_LANG=$1
 WIKI_LANG_SHORT=`echo $WIKI_LANG | sed 's/\(^..\).*/\1/'`
 WIKI=${WIKI_LANG}wiki
 PAGEVIEW_CODE=${WIKI_LANG}.z
-DB_HOST=${WIKI_LANG_SHORT}wiki.labsdb
+
+# WIKI DB
+DB_HOST=${WIKI_LANG_SHORT}wiki.analytics.db.svc.eqiad.wmflabs
 DB=`echo ${WIKI} | sed 's/-/_/g'`_p
+
+# WP1 DB
+WP1_DB_HOST=tools.db.svc.eqiad.wmflabs
+WP1_DB=s51114_enwp10
 
 # Update PATH
 SCRIPT_PATH=$0
@@ -214,21 +220,21 @@ then
     echo "ratings: page_title project quality importance" >> $README
 
     echo "Gathering importances..."
-    IMPORTANCES=`mysql --defaults-file=~/replica.my.cnf --quick -e "SELECT DISTINCT r_importance FROM ratings WHERE r_importance IS NOT NULL" -N -h enwiki.labsdb p50380g50494_data | tr '\n' ' ' | sed -e 's/[ ]*$//'`
+    IMPORTANCES=`mysql --defaults-file=~/replica.my.cnf --quick -e "SELECT DISTINCT r_importance FROM ratings WHERE r_importance IS NOT NULL" -N -h ${WP1_DB_HOST} ${WP1_DB} | tr '\n' ' ' | sed -e 's/[ ]*$//'`
     IFS=$' '
     for IMPORTANCE_RATING in $IMPORTANCES
     do
 	echo "Gathering ratings with importance '$IMPORTANCE_RATING'..."
 	mysql --defaults-file=~/replica.my.cnf --quick -e \
 	    "SELECT r_article, r_project, r_quality, r_importance FROM ratings WHERE r_importance = \"$IMPORTANCE_RATING\"" \
-	    -N -h enwiki.labsdb p50380g50494_data >> $DIR/ratings
+	    -N -h ${WP1_DB_HOST} ${WP1_DB} >> $DIR/ratings
     done
     unset IFS
 
     echo "Gathering ratings with importance IS NULL..."
     mysql --defaults-file=~/replica.my.cnf --quick -e \
 	"SELECT r_article, r_project, r_quality, r_importance FROM ratings WHERE r_importance IS NULL" \
-	-N -h enwiki.labsdb p50380g50494_data >> $DIR/ratings
+	-N -h ${WP1_DB_HOST} ${WP1_DB} >> $DIR/ratings
 fi
 
 ######################################################################
