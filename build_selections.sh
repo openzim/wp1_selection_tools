@@ -266,6 +266,17 @@ echo "scores: page_title score ..." >> $README
 $PERL $SCRIPT_DIR/build_scores.pl $DIR/all | sort -t$'\t' -k2 -n -r > $DIR/scores
 
 ######################################################################
+# Split scores by wikiproject for WPEN                               #
+######################################################################
+
+if [ $WIKI = 'enwiki' ]
+then
+    echo "Creating wikiprojet score..."
+    ulimit -n 3000
+    $PERL $SCRIPT_DIR/build_projects_lists.pl $DIR
+fi
+
+######################################################################
 # COMPRESS all files                                                 #
 ######################################################################
 
@@ -281,6 +292,13 @@ if [ -f $DIR/ratings ] ; then cat $DIR/ratings | lzma -9 > $DIR/ratings.lzma; fi
 if [ -f $DIR/vital ] ; then cat $DIR/vital | lzma -9 > $DIR/vital.lzma; fi
 rm -f $DIR/vital $DIR/ratings $DIR/pages $DIR/pageviews \
     $DIR/pagelinks $DIR/langlinks $DIR/redirects $DIR/all $DIR/scores
+if [ -d $DIR/projects ]
+then
+    cd $DIR
+    7za a -tzip -mx9 -mmt6 projects.zip projects -mmt
+    rm -rf projects
+    cd ..
+fi
 
 ######################################################################
 # UPLOAD to wp1.kiwix.org                                            # 
