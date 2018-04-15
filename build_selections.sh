@@ -269,17 +269,19 @@ $PERL $SCRIPT_DIR/build_scores.pl $DIR/all | sort -t$'\t' -k2 -n -r > $DIR/score
 # COMPUTE TOP SELECTIONS                                             #
 ######################################################################
 
+echo "top: page_title (one file per TOP selection)" >> $README
+echo "Creating TOP selections..."
 MAX=`wc -l "$DIR/scores" | cut -d ' ' -f1`;
 LAST_TOP=0
-if [ ! -d "$DIR/top_selections" ]; then mkdir "$DIR/top_selections" &> /dev/null; fi
+if [ ! -d "$DIR/tops" ]; then mkdir "$DIR/tops" &> /dev/null; fi
 for TOP in 10 50 100 500 1000 5000 10000 50000 100000 500000 1000000
 do
     if [ "$MAX" -gt "$TOP" ]
     then
-	head -n $TOP "$DIR/scores" | cut -f 1 > "$DIR/top_selections/$TOP"
+	head -n $TOP "$DIR/scores" | cut -f 1 > "$DIR/tops/$TOP"
 	LAST_TOP=$TOP
     else
-	rm -f "$DIR/top_selections/$LAST_TOP"
+	rm -f "$DIR/tops/$LAST_TOP"
 	break
     fi
 done
@@ -290,7 +292,8 @@ done
 
 if [ $WIKI = 'enwiki' ]
 then
-    echo "Creating wikiprojet score..."
+    echo "Creating wikiprojet selections..."
+    echo "project: page_title (one file per project)" >> $README
     ulimit -n 3000
     $PERL $SCRIPT_DIR/build_projects_lists.pl $DIR
 fi
@@ -311,11 +314,11 @@ cat $DIR/all       | lzma -9 > $DIR/all.lzma
 if [ -f $DIR/ratings ] ; then cat $DIR/ratings | lzma -9 > $DIR/ratings.lzma; fi
 if [ -f $DIR/vital ] ; then cat $DIR/vital | lzma -9 > $DIR/vital.lzma; fi
 if [ -d $DIR/projects ] ; then cd $DIR ; 7za a -tzip -mx9 -mmt6 projects.zip projects ; cd .. ; fi
-if [ -d $DIR/top_selections ] ; then cd $DIR ; 7za a -tzip -mx9 -mmt6 top_selections.zip top_selections ; cd .. ; fi
+if [ -d $DIR/tops ] ; then cd $DIR ; 7za a -tzip -mx9 -mmt6 tops.zip tops ; cd .. ; fi
 
 rm -rf $DIR/vital $DIR/ratings $DIR/pages $DIR/pageviews \
    $DIR/pagelinks $DIR/langlinks $DIR/redirects $DIR/all \
-   $DIR/scores $DIR/project $DIR/top_selections
+   $DIR/scores $DIR/projects $DIR/tops
 
 ######################################################################
 # UPLOAD to wp1.kiwix.org                                            # 
