@@ -262,7 +262,7 @@ $PERL $SCRIPT_DIR/merge_lists.pl $DIR > $DIR/all
 ######################################################################
 
 echo "Computing scores..."
-echo "scores: page_title score ..." >> $README
+echo "scores: page_title score" >> $README
 $PERL $SCRIPT_DIR/build_scores.pl $DIR/all | sort -t$'\t' -k2 -n -r > $DIR/scores
 
 ######################################################################
