@@ -266,6 +266,25 @@ echo "scores: page_title score ..." >> $README
 $PERL $SCRIPT_DIR/build_scores.pl $DIR/all | sort -t$'\t' -k2 -n -r > $DIR/scores
 
 ######################################################################
+# COMPUTE TOP SELECTIONS                                             #
+######################################################################
+
+MAX=`wc -l "$DIR/scores" | cut -d ' ' -f1`;
+LAST_TOP=0
+if [ ! -d "$DIR/top_selections" ]; then mkdir "$DIR/top_selections" &> /dev/null; fi
+for TOP in 10 50 100 500 1000 5000 10000 50000 100000 500000 1000000
+do
+    if [ "$MAX" -gt "$TOP" ]
+    then
+	head -n $TOP "$DIR/scores" | cut -f 1 > "$DIR/top_selections/$TOP"
+	LAST_TOP=$TOP
+    else
+	rm -f "$DIR/top_selections/$LAST_TOP"
+	break
+    fi
+done
+
+######################################################################
 # Split scores by wikiproject for WPEN                               #
 ######################################################################
 
@@ -288,17 +307,15 @@ cat $DIR/langlinks | lzma -9 > $DIR/langlinks.lzma
 cat $DIR/redirects | lzma -9 > $DIR/redirects.lzma
 cat $DIR/scores    | lzma -9 > $DIR/scores.lzma
 cat $DIR/all       | lzma -9 > $DIR/all.lzma
+
 if [ -f $DIR/ratings ] ; then cat $DIR/ratings | lzma -9 > $DIR/ratings.lzma; fi
 if [ -f $DIR/vital ] ; then cat $DIR/vital | lzma -9 > $DIR/vital.lzma; fi
-rm -f $DIR/vital $DIR/ratings $DIR/pages $DIR/pageviews \
-    $DIR/pagelinks $DIR/langlinks $DIR/redirects $DIR/all $DIR/scores
-if [ -d $DIR/projects ]
-then
-    cd $DIR
-    7za a -tzip -mx9 -mmt6 projects.zip projects -mmt
-    rm -rf projects
-    cd ..
-fi
+if [ -d $DIR/projects ] ; then cd $DIR ; 7za a -tzip -mx9 -mmt6 projects.zip projects ; cd .. ; fi
+if [ -d $DIR/top_selections ] ; then cd $DIR ; 7za a -tzip -mx9 -mmt6 top_selections.zip top_selections ; cd .. ; fi
+
+rm -rf $DIR/vital $DIR/ratings $DIR/pages $DIR/pageviews \
+   $DIR/pagelinks $DIR/langlinks $DIR/redirects $DIR/all \
+   $DIR/scores $DIR/project $DIR/top_selections
 
 ######################################################################
 # UPLOAD to wp1.kiwix.org                                            # 
