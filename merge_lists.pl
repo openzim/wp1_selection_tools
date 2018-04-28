@@ -90,8 +90,7 @@ while(<FILE>) {
     chomp($line);
     my ($sourcePageId, $targetPageTitle) = split("\t", $line);
     my $sourcePageTitle = $id2title[$sourcePageId];
-    if ($sourcePageTitle &&
-	exists($counts{$sourcePageTitle})) {
+    if ($sourcePageTitle && exists($counts{$sourcePageTitle})) {
 	
 	if (exists($counts{$targetPageTitle})) {
 	    if ($counts{$sourcePageTitle}{"l"}) {
@@ -118,12 +117,16 @@ while(<FILE>) {
 	}
 
 	delete($counts{$sourcePageTitle});
+	$id2title[$sourcePageId] = undef;
     }
 }
 close(FILE);
 
-# Open ratings (if exists)
+# Free a bit of memory
+@id2title = ();
+$id2title_length = 0;
 
+# Open ratings (if exists)
 my %projects;
 my %classes;
 my %evals;
