@@ -5,7 +5,8 @@ use warnings;
 use utf8;
 
 my %counts;
-my %id2title;
+my @id2title;
+my $id2title_length = 0;
 
 # Check if directory exists
 my $directory = $ARGV[0] || "";
@@ -16,6 +17,18 @@ if (!-d $directory) {
 
 # Open pages
 my $pagesFile = "$directory/pages";
+
+print STDERR "Getting higher page id from $pagesFile...\n";
+open(FILE, '<', $pagesFile) or die("Unable to open file $pagesFile\n");
+while(<FILE>) {
+    my $line = $_;
+    chomp($line);
+    my ($pageId) = split("\t", $line);
+    $id2title_length = $pageId if $id2title_length <= $pageId
+}
+close(FILE);
+$#id2title = $id2title_length;
+
 print STDERR "Reading $pagesFile...\n";
 open(FILE, '<', $pagesFile) or die("Unable to open file $pagesFile\n");
 while(<FILE>) {
@@ -26,7 +39,7 @@ while(<FILE>) {
     unless ($isRedirect) {
 	$counts{$pageTitle}{"s"} = $pageSize;
     }
-    $id2title{$pageId} = $pageTitle;
+    $id2title[$pageId] = $pageTitle;
 }
 close(FILE);
 
@@ -50,7 +63,7 @@ while(<FILE>) {
     my $line = $_;
     chomp($line);
     my ($pageId) = split("\t", $line);
-    my $pageTitle = $id2title{$pageId};
+    my $pageTitle = $id2title[$pageId];
     next unless ($pageTitle);
     $counts{$pageTitle}{"ll"} = exists($counts{$pageTitle}{"ll"}) ? $counts{$pageTitle}{"ll"}+1 : 0;
 }
@@ -76,7 +89,7 @@ while(<FILE>) {
     my $line = $_;
     chomp($line);
     my ($sourcePageId, $targetPageTitle) = split("\t", $line);
-    my $sourcePageTitle = $id2title{$sourcePageId};
+    my $sourcePageTitle = $id2title[$sourcePageId];
     if ($sourcePageTitle &&
 	exists($counts{$sourcePageTitle})) {
 	
