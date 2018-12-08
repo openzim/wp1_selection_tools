@@ -4,7 +4,7 @@
 set -e
 set -o pipefail
 
-LIST_CATEGORY_SCRIPT_PATH=/srv/kiwix-tools/tools/scripts/listCategoryEntries.pl
+LIST_CATEGORY_SCRIPT_PATH=mediawiki/scripts/listCategoryEntries.pl
 
 for LEVEL in `echo "1 2 3 4" | tr ' ' '\n'`
 do
