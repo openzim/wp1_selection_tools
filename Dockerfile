@@ -1,7 +1,8 @@
 FROM ubuntu:latest
 
 RUN apt-get update && \
-    apt-get install -y curl xml2 wget mysql-client \
+    apt-get install -y --no-install-recommends \
+    cron ca-certificates curl xml2 wget mysql-client \
     perl-modules-5.26 libxml-simple-perl \
     libgetargs-long-perl
 
@@ -15,4 +16,7 @@ COPY build_scores.pl .
 COPY build_selections.sh .
 COPY merge_lists.pl .
 
-CMD [ "/bin/bash" ]
+CMD { \
+  echo "#!/bin/sh" ; \
+  echo "/build_all_selections.sh" ; \
+} > /etc/cron.monthly/wp1_selection_tools && chmod a+x /etc/cron.monthly/wp1_selection_tools && cron -f
