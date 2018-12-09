@@ -36,6 +36,9 @@ README=$DIR/README
 if [ ! -d $DIR ]; then mkdir $DIR &> /dev/null; fi
 if [ ! -d $DIR ]; then mkdir $TMP &> /dev/null; fi
 
+# MySQL command line
+MYSQL='mysql --defaults-file=~/replica.my.cnf --ssl-mode=DISABLED --quick -e'
+
 # Perl and sort(1) have locale issues, which can be avoided by
 # disabling locale handling entirely.
 PERL=`whereis perl | cut -f2 -d " "`
@@ -160,7 +163,7 @@ do
     LOWER_LIMIT=$UPPER_LIMIT
     UPPER_LIMIT=$((UPPER_LIMIT + 100000))
     echo "   from page_id $LOWER_LIMIT to $UPPER_LIMIT..."
-    mysql --defaults-file=~/replica.my.cnf --quick -e \
+    $MYSQL \
         "SELECT page.page_id, page.page_title, revision.rev_len, page.page_is_redirect FROM page, revision WHERE page.page_namespace = 0 AND revision.rev_id = page.page_latest AND page.page_id >= $LOWER_LIMIT AND page.page_id < $UPPER_LIMIT" \
         -N -h ${DB_HOST} ${DB} >> $DIR/pages
     NEW_SIZE=`ls -la $DIR/pages 2> /dev/null | cut -d " " -f5`
@@ -183,7 +186,7 @@ do
     LOWER_LIMIT=$UPPER_LIMIT
     UPPER_LIMIT=$((UPPER_LIMIT + 10000))
     echo "   from pl_from from $LOWER_LIMIT to $UPPER_LIMIT..."
-    mysql --defaults-file=~/replica.my.cnf --quick -e \
+    $MYSQL \
 	"SELECT pl_from, pl_title FROM pagelinks WHERE pl_namespace = 0 AND pl_from_namespace = 0 AND pl_from >= $LOWER_LIMIT AND pl_from < $UPPER_LIMIT" \
 	-N -h ${DB_HOST} ${DB} >> $DIR/pagelinks
     NEW_SIZE=`ls -la $DIR/pagelinks 2> /dev/null | cut -d " " -f5`
@@ -196,14 +199,14 @@ done
 # Language links
 echo "Gathering language links..."
 echo "langlinks: source_page_id language_code target_page_title" >> $README
-mysql --defaults-file=~/replica.my.cnf --quick -e \
+$MYSQL \
     "SELECT ll_from, ll_lang, ll_title FROM langlinks, page WHERE langlinks.ll_from = page.page_id AND page.page_namespace = 0" \
     -N -h ${DB_HOST} ${DB} | sed 's/ /_/g' > $DIR/langlinks
 
 # Redirects
 echo "Gathering redirects..."
 echo "redirects: source_page_id target_page_title" >> $README
-mysql --defaults-file=~/replica.my.cnf --quick -e \
+$MYSQL \
     "SELECT rd_from, rd_title FROM redirect WHERE rd_namespace = 0" \
     -N -h ${DB_HOST} ${DB} > $DIR/redirects
 
@@ -220,19 +223,19 @@ then
     echo "ratings: page_title project quality importance" >> $README
 
     echo "Gathering importances..."
-    IMPORTANCES=`mysql --defaults-file=~/replica.my.cnf --quick -e "SELECT DISTINCT r_importance FROM ratings WHERE r_importance IS NOT NULL" -N -h ${WP1_DB_HOST} ${WP1_DB} | tr '\n' ' ' | sed -e 's/[ ]*$//'`
+    IMPORTANCES=`$MYSQL "SELECT DISTINCT r_importance FROM ratings WHERE r_importance IS NOT NULL" -N -h ${WP1_DB_HOST} ${WP1_DB} | tr '\n' ' ' | sed -e 's/[ ]*$//'`
     IFS=$' '
     for IMPORTANCE_RATING in $IMPORTANCES
     do
 	echo "Gathering ratings with importance '$IMPORTANCE_RATING'..."
-	mysql --defaults-file=~/replica.my.cnf --quick -e \
-	    "SELECT r_article, r_project, r_quality, r_importance FROM ratings WHERE r_importance = \"$IMPORTANCE_RATING\"" \
+        $MYSQL \
+            "SELECT r_article, r_project, r_quality, r_importance FROM ratings WHERE r_importance = \"$IMPORTANCE_RATING\"" \
 	    -N -h ${WP1_DB_HOST} ${WP1_DB} >> $DIR/ratings
     done
     unset IFS
 
     echo "Gathering ratings with importance IS NULL..."
-    mysql --defaults-file=~/replica.my.cnf --quick -e \
+    $MYSQL \
 	"SELECT r_article, r_project, r_quality, r_importance FROM ratings WHERE r_importance IS NULL" \
 	-N -h ${WP1_DB_HOST} ${WP1_DB} >> $DIR/ratings
 fi
