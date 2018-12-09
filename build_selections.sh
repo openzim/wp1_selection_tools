@@ -320,7 +320,7 @@ if [ -d $DIR/tops ] ; then cd $DIR ; 7za a -tzip -mx9 -mmt6 tops.zip tops ; cd .
 
 rm -rf $DIR/vital $DIR/ratings $DIR/pages $DIR/pageviews \
    $DIR/pagelinks $DIR/langlinks $DIR/redirects $DIR/all \
-   $DIR/scores $DIR/projects $DIR/tops
+   $DIR/scores # $DIR/projects $DIR/tops
 
 ######################################################################
 # UPLOAD to wp1.kiwix.org                                            # 
