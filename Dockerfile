@@ -5,7 +5,7 @@ RUN apt-get update && \
     cron ca-certificates curl xml2 wget mysql-client \
     perl-modules-5.26 libxml-simple-perl \
     libgetargs-long-perl p7zip-full lzma \
-    openssh-client
+    openssh-client libwww-perl
 
 COPY mediawiki/ mediawiki/
 COPY add_target_ids_to_pagelinks.pl .
