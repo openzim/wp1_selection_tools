@@ -33,7 +33,7 @@ DIR=$TMP/${WIKI}_`date +"%Y-%m"`
 README=$DIR/README
 
 # Create directories
-if [ ! -d $DIR ]; then mkdir $TMP &> /dev/null; fi
+if [ ! -d $TMP ]; then mkdir $TMP &> /dev/null; fi
 if [ ! -d $DIR ]; then mkdir $DIR &> /dev/null; fi
 
 # MySQL command line
