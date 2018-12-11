@@ -28,13 +28,13 @@ SCRIPT_DIR=`dirname $SCRIPT_PATH`
 export PATH=$PATH:$SCRIPT_DIR
 
 # Setup global variables
-DIR=$SCRIPT_DIR/${WIKI}_`date +"%Y-%m"`
 TMP=$SCRIPT_DIR/tmp
+DIR=$TMP/${WIKI}_`date +"%Y-%m"`
 README=$DIR/README
 
 # Create directories
-if [ ! -d $DIR ]; then mkdir $DIR &> /dev/null; fi
 if [ ! -d $DIR ]; then mkdir $TMP &> /dev/null; fi
+if [ ! -d $DIR ]; then mkdir $DIR &> /dev/null; fi
 
 # MySQL command line
 MYSQL='mysql --defaults-file=~/replica.my.cnf --ssl-mode=DISABLED --quick -e'
