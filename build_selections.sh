@@ -330,7 +330,7 @@ rm -rf $DIR/vital $DIR/ratings $DIR/pages $DIR/pageviews \
 ######################################################################
 
 echo "Upload $DIR to download.kiwix.org"
-scp -o StrictHostKeyChecking=no -r $DIR `cat SCRIPT_DIR/remote`
+scp -o StrictHostKeyChecking=no -r $DIR `cat $SCRIPT_DIR/remote`
 
 ######################################################################
 # CLEAN DIRECTORY                                                    # 
