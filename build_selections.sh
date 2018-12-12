@@ -23,8 +23,8 @@ WP1_DB_HOST=tools.db.svc.eqiad.wmflabs
 WP1_DB=s51114_enwp10
 
 # Update PATH
-SCRIPT_PATH=$0
-SCRIPT_DIR=`dirname $SCRIPT_PATH`
+SCRIPT_PATH=`readlink -f $0`
+SCRIPT_DIR=`dirname $SCRIPT_PATH | sed -e 's/.$//'`
 export PATH=$PATH:$SCRIPT_DIR
 
 # Setup global variables
@@ -330,7 +330,7 @@ rm -rf $DIR/vital $DIR/ratings $DIR/pages $DIR/pageviews \
 ######################################################################
 
 echo "Upload $DIR to download.kiwix.org"
-scp -o StrictHostKeyChecking=no -r $DIR `cat remote`
+scp -o StrictHostKeyChecking=no -r $DIR `cat SCRIPT_DIR/remote`
 
 ######################################################################
 # CLEAN DIRECTORY                                                    # 
