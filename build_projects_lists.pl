@@ -63,12 +63,12 @@ for my $project (keys(%projectsFds)) {
 # Sorting all project files
 opendir(DIR, $projectsDir) or die("Unable to open directory '$projectsDir'\n");
 while (my $projectFile = readdir(DIR)) {
-    next if ($projectFile =~ m/^\./);
+    next unless ($projectFile =~ m/\.tmp$/);
     $projectFile = "$projectsDir/$projectFile";
     my $newProjectFile = $projectFile;
     $newProjectFile =~ s/\.tmp$//m;
     print STDERR "Sorting $projectFile to $newProjectFile\n";
-    my $cmd = qq(cat "$projectFile" | sort -k2 -u -n -r | cut -f1 > "$newProjectFile");
+    my $cmd = qq(cat "$projectFile" | sort -k2 -n -r | sort -u | cut -f1 > "$newProjectFile");
     system $cmd;
     $cmd = qq(rm "$projectFile"); `$cmd`;
 }
