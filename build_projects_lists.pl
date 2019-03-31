@@ -68,7 +68,7 @@ while (my $projectFile = readdir(DIR)) {
     my $newProjectFile = $projectFile;
     $newProjectFile =~ s/\.tmp$//m;
     print STDERR "Sorting $projectFile to $newProjectFile\n";
-    my $cmd = qq(cat "$projectFile" | sort -k2 -n -r | sort -u | cut -f1 > "$newProjectFile");
+    my $cmd = qq(cat "$projectFile" | sort -k2 -n -r | awk '!a[\$0]++' | cut -f1 > "$newProjectFile");
     system $cmd;
     $cmd = qq(rm "$projectFile"); `$cmd`;
 }
