@@ -290,6 +290,13 @@ do
 done
 
 ######################################################################
+# Build custom selections                                            #
+######################################################################
+
+if [ ! -d "$DIR/custom" ]; then mkdir "$DIR/custom" &> /dev/null; fi
+$SCRIPT_DIR/build_custom_selections.sh $WIKI_LANG $DIR/custom
+
+######################################################################
 # Split scores by wikiproject for WPEN                               #
 ######################################################################
 

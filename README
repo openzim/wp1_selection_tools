@@ -35,6 +35,8 @@ directory.
 * build_all_selections.sh to build/upload lists for all Wikipedia with
   more than 500.000 pages.
 
+* build_custom_selections.sh to create special selections like Wikimed
+
 * add_target_ids_to_pagelinks.pl generates on the output a copy of
   pagelinks with in the last column the the link target page id.
 
