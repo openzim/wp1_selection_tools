@@ -13,6 +13,7 @@ COPY build_all_selections.sh .
 COPY build_biggest_wikipedia_list.sh .
 COPY build_en_vital_articles_list.sh .
 COPY build_projects_lists.pl .
+COPY build_translated_list.pl .
 COPY build_scores.pl .
 COPY build_selections.sh .
 COPY merge_lists.pl .
