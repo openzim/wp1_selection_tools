@@ -42,8 +42,12 @@ directory.
   English vital articles
   (https://en.wikipedia.org/wiki/Wikipedia:Vital_articles)
 
-* build_projects_lists.pl generates the list for projects with
-  articles sorted (reverse order) by scores.
+* build_projects_lists.pl generates the lists for projects with
+  articles sorted (reverse order) by scores. Works only for Wikipedia
+  in English.
+
+* build_translated_list.pl translates a list in the given language
+  based on Wikipedia in English language links.
 
 == Download ==
 
