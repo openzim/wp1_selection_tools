@@ -299,8 +299,11 @@ then
     echo "project: page_title (one file per project)" >> $README
     ulimit -n 3000
     $PERL $SCRIPT_DIR/build_projects_lists.pl $DIR
-    rm -rf $TMP/projects
-    cp -r $DIR/projects $TMP
+    rm -rf $TMP/en.projects
+    cp -r $DIR/en.projects $TMP
+    rm -rf $TMP/en.needed
+    cp $DIR/pages $TMP/en.needed
+    cp $DIR/langlinks $TMP/en.needed
 fi
 
 ######################################################################
