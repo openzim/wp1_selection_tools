@@ -22,8 +22,8 @@ if (!$lang) {
 
 for my $file ($titleFile, $langLinks, $pages) {
     if (!-f $file) {
-	print STDERR "File '$file' does not exist, is not a file or is not readable.\n";
-	exit 1;
+        print STDERR "File '$file' does not exist, is not a file or is not readable.\n";
+        exit 1;
     }
 }
 
@@ -45,8 +45,8 @@ while(<FILE>) {
     chomp($line);
     my ($id, $title) = split("\t", $line);
     if (exists $titles{$title}) {
-	$ids{$id} = undef;
-	delete $titles{$title};
+        $ids{$id} = undef;
+        delete $titles{$title};
     }
 }
 close(FILE);

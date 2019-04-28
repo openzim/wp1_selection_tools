@@ -304,6 +304,12 @@ then
     rm -rf $TMP/en.needed
     cp $DIR/pages $TMP/en.needed
     cp $DIR/langlinks $TMP/en.needed
+else
+    mkdir $DIR/projects;
+    for FILE in `find tmp/en.projects/ -type f`
+    do
+        $PERL $SCRIPT_DIR/build_translated_list.pl $FILE $WIKI_LANG > $DIR/projects/`basename $FILE`
+    done
 fi
 
 ######################################################################
