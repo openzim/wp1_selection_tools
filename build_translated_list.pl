@@ -12,7 +12,7 @@ my %ids;
 # Check command line arguments
 my $titleFile = $ARGV[0] || "";
 my $lang      = $ARGV[1] || "";
-my $langLinks = "$FindBin::Bin/tmp/en.needed/langlinks";
+my $langLinks = "$FindBin::Bin/tmp/en.needed/langlinks.tmp";
 my $pages     = "$FindBin::Bin/tmp/en.needed/pages";
 
 if (!$lang) {
