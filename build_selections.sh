@@ -24,7 +24,7 @@ WP1_DB=s51114_enwp10
 
 # Update PATH
 SCRIPT_PATH=`readlink -f $0`
-SCRIPT_DIR=`dirname $SCRIPT_PATH | sed -e 's/.$//'`
+SCRIPT_DIR=`dirname $SCRIPT_PATH | sed -e 's/\/$//'`
 export PATH=$PATH:$SCRIPT_DIR
 
 # Setup global variables
@@ -315,6 +315,17 @@ else
 fi
 
 ######################################################################
+# CUSTOM selections                                                  #
+######################################################################
+
+mkdir $DIR/customs;
+$SCRIPT_DIR/build_custom_selections.sh $WIKI_LANG $DIR/customs
+if [ $WIKI = 'enwiki' ]
+then
+    cp $DIR/customs/medicine $TMP/en.needed
+fi
+
+######################################################################
 # COMPRESS all files                                                 #
 ######################################################################
 
@@ -331,10 +342,11 @@ if [ -f $DIR/ratings ] ; then cat $DIR/ratings | lzma -9 > $DIR/ratings.lzma; fi
 if [ -f $DIR/vital ] ; then cat $DIR/vital | lzma -9 > $DIR/vital.lzma; fi
 if [ -d $DIR/projects ] ; then cd $DIR ; 7za a -tzip -mx9 -mmt6 projects.zip projects ; cd .. ; fi
 if [ -d $DIR/tops ] ; then cd $DIR ; 7za a -tzip -mx9 -mmt6 tops.zip tops ; cd .. ; fi
+if [ -d $DIR/customs ] ; then cd $DIR ; 7za a -tzip -mx9 -mmt6 customs.zip tops ; cd .. ; fi
 
 rm -rf $DIR/vital $DIR/ratings $DIR/pages $DIR/pageviews \
    $DIR/pagelinks $DIR/langlinks $DIR/redirects $DIR/all \
-   $DIR/scores # $DIR/projects $DIR/tops
+   $DIR/scores # $DIR/projects $DIR/tops $DIR/customs
 
 ######################################################################
 # UPLOAD to wp1.kiwix.org                                            # 
