@@ -55,7 +55,7 @@ usage() {
     exit
 }
 
-if [ "$WIKI_LANG" = '' ]
+if [ "$WIKI_LANG" == '' ]
 then
   usage;
 fi
@@ -167,7 +167,7 @@ do
         "SELECT page.page_id, page.page_title, revision.rev_len, page.page_is_redirect FROM page, revision WHERE page.page_namespace = 0 AND revision.rev_id = page.page_latest AND page.page_id >= $LOWER_LIMIT AND page.page_id < $UPPER_LIMIT" \
         -N -h ${DB_HOST} ${DB} >> $DIR/pages
     NEW_SIZE=`ls -la $DIR/pages 2> /dev/null | cut -d " " -f5`
-    if [ x$OLD_SIZE = x$NEW_SIZE ]
+    if [ x$OLD_SIZE == x$NEW_SIZE ]
     then
         break
     fi
@@ -190,7 +190,7 @@ do
 	"SELECT pl_from, pl_title FROM pagelinks WHERE pl_namespace = 0 AND pl_from_namespace = 0 AND pl_from >= $LOWER_LIMIT AND pl_from < $UPPER_LIMIT" \
 	-N -h ${DB_HOST} ${DB} >> $DIR/pagelinks
     NEW_SIZE=`ls -la $DIR/pagelinks 2> /dev/null | cut -d " " -f5`
-    if [ x$OLD_SIZE = x$NEW_SIZE ]
+    if [ x$OLD_SIZE == x$NEW_SIZE ]
     then
         break
     fi
@@ -214,7 +214,7 @@ $MYSQL \
 # GATHER WP1 ratings for WPEN                                        #
 ######################################################################
 
-if [ $WIKI = 'enwiki' ]
+if [ $WIKI == 'enwiki' ]
 then
     echo "Gathering WP1 ratings..."
     rm -f $DIR/ratings
@@ -244,7 +244,7 @@ fi
 # GATHER Vital Articles for WPEN                                     #
 ######################################################################
 
-if [ $WIKI = 'enwiki' ]
+if [ $WIKI == 'enwiki' ]
 then
     echo "Gathering vital articles..."
 
@@ -276,7 +276,11 @@ echo "top: page_title (one file per TOP selection)" >> $README
 echo "Creating TOP selections..."
 MAX=`wc -l "$DIR/scores" | cut -d ' ' -f1`;
 LAST_TOP=0
-if [ ! -d "$DIR/tops" ]; then mkdir "$DIR/tops" &> /dev/null; fi
+if [ ! -d "$DIR/tops" ]
+then
+    mkdir "$DIR/tops" &> /dev/null
+fi
+
 for TOP in 10 50 100 500 1000 5000 10000 50000 100000 500000 1000000
 do
     if [ "$MAX" -gt "$TOP" ]
@@ -293,7 +297,7 @@ done
 # Split scores by wikiproject for WPEN                               #
 ######################################################################
 
-if [ $WIKI = 'enwiki' ]
+if [ $WIKI == 'enwiki' ]
 then
     echo "Creating wikiprojet selections..."
     echo "project: page_title (one file per project)" >> $README
@@ -321,7 +325,7 @@ fi
 
 mkdir $DIR/customs
 $SCRIPT_DIR/build_custom_selections.sh $WIKI_LANG $DIR/customs
-if [ $WIKI = 'enwiki' ]
+if [ $WIKI == 'enwiki' ]
 then
     cp $DIR/customs/medicine $TMP/en.needed
 fi

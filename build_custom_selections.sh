@@ -34,10 +34,13 @@ then
 fi
 
 # Prepare langlinks.tmp
-grep -P "\t$WIKI_LANG\t" $TMP/en.needed/langlinks > $TMP/en.needed/langlinks.tmp
+if [ $WIKI_LANG != 'en' ]
+then
+   grep -P "\t$WIKI_LANG\t" $TMP/en.needed/langlinks > $TMP/en.needed/langlinks.tmp
+fi
 
 # English
-if [ "$WIKI_LANG" == "en" ]
+if [ $WIKI_LANG == "en" ]
 then
 
     # Wikivoyage Europe
