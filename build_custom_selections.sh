@@ -109,10 +109,6 @@ then
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Chemistry_articles" | \
 	sed 's/Talk://' | sort -u > "/tmp/chemistry_unfiltered"
     grep -Fxv -f "/tmp/filter_out" "/tmp/chemistry_unfiltered" | sort -u > "$CUSTOM_DIR/chemistry"
-
-    # Musicians
-    $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="Actors_and_filmmakers_work_group_articles" \
-	  --category="WikiProject_Film_articles" | sed 's/Talk://' | sort -u > "$CUSTOM_DIR/movies"
     
 # French    
 elif [ "$WIKI_LANG" == "fr" ]
