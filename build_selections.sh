@@ -302,6 +302,7 @@ then
     rm -rf $TMP/en.projects
     cp -r $DIR/projects $TMP/en.projects
     rm -rf $TMP/en.needed
+    mkdir $TMP/en.needed
     cp $DIR/pages $TMP/en.needed
     cp $DIR/langlinks $TMP/en.needed
 else
