@@ -57,7 +57,7 @@ usage() {
 
 if [ "$WIKI_LANG" == '' ]
 then
-  usage;
+  usage
 fi
 
 ######################################################################
@@ -327,7 +327,9 @@ mkdir $DIR/customs
 $SCRIPT_DIR/build_custom_selections.sh $WIKI_LANG $DIR/customs
 if [ $WIKI == 'enwiki' ]
 then
-    cp $DIR/customs/medicine $TMP/en.needed
+    rm -rf $TMP/en.customs
+    mkdir $TMP/en.customs
+    cp $DIR/customs/* $TMP/en.customs
 fi
 
 ######################################################################
