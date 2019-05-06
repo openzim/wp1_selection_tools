@@ -347,7 +347,7 @@ if [ -f $DIR/ratings ] ; then cat $DIR/ratings | lzma -9 > $DIR/ratings.lzma; fi
 if [ -f $DIR/vital ] ; then cat $DIR/vital | lzma -9 > $DIR/vital.lzma; fi
 if [ -d $DIR/projects ] ; then cd $DIR ; 7za a -tzip -mx9 -mmt6 projects.zip projects ; cd .. ; fi
 if [ -d $DIR/tops ] ; then cd $DIR ; 7za a -tzip -mx9 -mmt6 tops.zip tops ; cd .. ; fi
-if [ -d $DIR/customs ] ; then cd $DIR ; 7za a -tzip -mx9 -mmt6 customs.zip tops ; cd .. ; fi
+if [ -d $DIR/customs ] ; then cd $DIR ; 7za a -tzip -mx9 -mmt6 customs.zip customs ; cd .. ; fi
 
 rm -rf $DIR/vital $DIR/ratings $DIR/pages $DIR/pageviews \
    $DIR/pagelinks $DIR/langlinks $DIR/redirects $DIR/all \
