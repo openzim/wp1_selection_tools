@@ -44,7 +44,7 @@ if [ $WIKI_LANG != "en" ]
 then
     for FILE in `find tmp/en.customs/ -type f`
     do
-        $PERL $TRANSLATE_LIST_SCRIPT_PATH "$FILE" $WIKI_LANG > "$CUSTOM_DIR"
+        $PERL $TRANSLATE_LIST_SCRIPT_PATH "$FILE" $WIKI_LANG > $CUSTOM_DIR/`basename $FILE`
     done
 fi
 
