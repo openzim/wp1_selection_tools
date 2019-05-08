@@ -19,7 +19,7 @@ COPY build_scores.pl .
 COPY build_selections.sh .
 COPY merge_lists.pl .
 COPY compare_lists.pl .
-COPY customs .
+COPY customs customs
 
 CMD { \
   echo "#!/bin/sh" ; \
