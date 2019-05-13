@@ -59,7 +59,8 @@ if [ $WIKI_LANG == "en" ]
 then
 
     # Wikivoyage Europe
-    $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikivoyage.org --path=w --exploration=8 --namespace=0 --category="Europe" | sort -u > "$CUSTOM_DIR/wikivoyage_europe"
+    if [ ! -d "$CUSTOM_DIR/wikivoyage" ]; then mkdir "$CUSTOM_DIR/wikivoyage" &> /dev/null; fi
+    $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikivoyage.org --path=w --exploration=8 --namespace=0 --category="Europe" | sort -u > "$CUSTOM_DIR/wikivoyage/europe"
 
     # WikiMed
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Women's_health_articles" \
