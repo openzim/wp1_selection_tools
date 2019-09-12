@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ######################################################################
-# CONFIGURATION                                                      # 
+# CONFIGURATION                                                      #
 ######################################################################
 
 # Stop if any problem
@@ -28,7 +28,7 @@ SCRIPT_DIR=`dirname $SCRIPT_PATH | sed -e 's/\/$//'`
 export PATH=$PATH:$SCRIPT_DIR
 
 # Setup global variables
-TMP=$SCRIPT_DIR/tmp
+TMP=$SCRIPT_DIR/data
 DIR=$TMP/${WIKI}_`date +"%Y-%m"`
 README=$DIR/README
 
@@ -46,7 +46,7 @@ LANG=C
 export LANG
 
 ######################################################################
-# CHECK COMMAND LINE ARGUMENTS                                       # 
+# CHECK COMMAND LINE ARGUMENTS                                       #
 ######################################################################
 
 usage() {
@@ -61,7 +61,7 @@ then
 fi
 
 ######################################################################
-# COMPUTE PAGEVIEWS                                                  # 
+# COMPUTE PAGEVIEWS                                                  #
 ######################################################################
 
 # Get namespaces
@@ -147,7 +147,7 @@ cp $PAGEVIEWS $DIR/pageviews
 echo "pageviews: page_title view_count" > $README
 
 ######################################################################
-# GATHER pages key values                                            # 
+# GATHER pages key values                                            #
 ######################################################################
 
 # Pages
@@ -323,7 +323,11 @@ fi
 # CUSTOM selections                                                  #
 ######################################################################
 
-mkdir $DIR/customs
+if [ ! -d "$DIR/customs" ]
+then
+    mkdir "$DIR/customs" &> /dev/null
+fi
+
 $SCRIPT_DIR/build_custom_selections.sh $WIKI_LANG $DIR/customs
 if [ $WIKI == 'enwiki' ]
 then
@@ -356,14 +360,14 @@ rm -rf $DIR/vital $DIR/ratings $DIR/pages $DIR/pageviews \
    $DIR/scores # $DIR/projects $DIR/tops $DIR/customs
 
 ######################################################################
-# UPLOAD to wp1.kiwix.org                                            # 
+# UPLOAD to wp1.kiwix.org                                            #
 ######################################################################
 
 echo "Upload $DIR to download.kiwix.org"
 scp -o StrictHostKeyChecking=no -r $DIR `cat $SCRIPT_DIR/remote`
 
 ######################################################################
-# CLEAN DIRECTORY                                                    # 
+# CLEAN DIRECTORY                                                    #
 ######################################################################
 
 if [ $? -eq 0 ]

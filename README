@@ -68,8 +68,8 @@ if [[ $LAST != $RADICAL ]] ; then echo $ENTRY ; LAST=$RADICAL ; fi ; done
 == VPS ==
 
 To run it on VPS via Docker:
-$ docker run -d --name wp1_selection_tools -v /srv/wp1_selection_tools/tmp:/tmp \
+$ docker run -d --name wp1_selection_tools
+  -v /srv/wp1_selection_tools/data:/data \
   -v /srv/wp1_selection_tools/.ssh/:/root/.ssh \
-  -v /srv/wp1_selection_tools/remote:/remote \
   -v /srv/wp1_selection_tools/replica.my.cnf:/root/replica.my.cnf \
   openzim/wp1_selection_tools
