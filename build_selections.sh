@@ -100,16 +100,16 @@ do
     OLD_SIZE=0
     if [ -f $TMP/$FILE ]
     then
-	OLD_SIZE=`ls -la $TMP/$FILE 2> /dev/null | cut -d " " -f5`
+        OLD_SIZE=`ls -la $TMP/$FILE 2> /dev/null | cut -d " " -f5`
     fi
     wget -c https://dumps.wikimedia.org/other/pagecounts-ez/merged/$FILE -O $TMP/$FILE
     NEW_SIZE=`ls -la $TMP/$FILE 2> /dev/null | cut -d " " -f5`
 
     if [ x$OLD_SIZE != x$NEW_SIZE -o ! -f $PAGEVIEWS ]
     then
-	echo "$FILE NEW" >> $NEW_PAGEVIEW_FILES
+        echo "$FILE NEW" >> $NEW_PAGEVIEW_FILES
     else
-	echo "$FILE OLD" >> $NEW_PAGEVIEW_FILES
+        echo "$FILE OLD" >> $NEW_PAGEVIEW_FILES
     fi
 done
 
@@ -124,15 +124,15 @@ for FILE in `cat $NEW_PAGEVIEW_FILES | grep NEW | cut -d " " -f1`
 do
     echo "Parsing $TMP/$FILE..."
     cat $TMP/$FILE | \
-	bzcat | \
-	grep "^$PAGEVIEW_CODE" | \
-	cut -d " " -f2,3 | \
-	egrep -v `cat $NAMESPACES` \
-	> $PAGEVIEWS.tmp
+        bzcat | \
+        grep "^$PAGEVIEW_CODE" | \
+        cut -d " " -f2,3 | \
+        egrep -v `cat $NAMESPACES` \
+        > $PAGEVIEWS.tmp
     cat $PAGEVIEWS $PAGEVIEWS.tmp | \
-	sort -t " " -k1,1 -i | \
-	$PERL -ne '($title, $count) = split(" ", $_); if ($title eq $last) { $last_count += $count } else { print "$last\t$last_count\n"; $last=$title; $last_count=$count;}' \
-	> $PAGEVIEWS.new
+        sort -t " " -k1,1 -i | \
+        $PERL -ne '($title, $count) = split(" ", $_); if ($title eq $last) { $last_count += $count } else { print "$last\t$last_count\n"; $last=$title; $last_count=$count;}' \
+        > $PAGEVIEWS.new
     mv $PAGEVIEWS.new $PAGEVIEWS
     rm $PAGEVIEWS.tmp
     ENTRY_COUNT=`wc $PAGEVIEWS | tr -s ' ' | cut -d " " -f2`
@@ -227,17 +227,17 @@ then
     IFS=$' '
     for IMPORTANCE_RATING in $IMPORTANCES
     do
-	echo "Gathering ratings with importance '$IMPORTANCE_RATING'..."
+        echo "Gathering ratings with importance '$IMPORTANCE_RATING'..."
         $MYSQL \
             "SELECT r_article, r_project, r_quality, r_importance FROM ratings WHERE r_importance = \"$IMPORTANCE_RATING\"" \
-	    -N -h ${WP1_DB_HOST} ${WP1_DB} >> $DIR/ratings
+            -N -h ${WP1_DB_HOST} ${WP1_DB} >> $DIR/ratings
     done
     unset IFS
 
     echo "Gathering ratings with importance IS NULL..."
     $MYSQL \
-	"SELECT r_article, r_project, r_quality, r_importance FROM ratings WHERE r_importance IS NULL" \
-	-N -h ${WP1_DB_HOST} ${WP1_DB} >> $DIR/ratings
+        "SELECT r_article, r_project, r_quality, r_importance FROM ratings WHERE r_importance IS NULL" \
+        -N -h ${WP1_DB_HOST} ${WP1_DB} >> $DIR/ratings
 fi
 
 ######################################################################
@@ -333,7 +333,7 @@ if [ $WIKI == 'enwiki' ]
 then
     rm -rf $TMP/en.customs
     mkdir $TMP/en.customs
-    cp $DIR/customs/* $TMP/en.customs
+    cp -r $DIR/customs/* $TMP/en.customs
 fi
 
 ######################################################################
