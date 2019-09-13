@@ -8,7 +8,7 @@ set -o pipefail
 SCRIPT_PATH=`readlink -f $0`
 SCRIPT_DIR=`dirname $SCRIPT_PATH | sed -e 's/\/$//'`
 export PATH=$PATH:$SCRIPT_DIR
-TMP=$SCRIPT_DIR/tmp
+TMP=$SCRIPT_DIR/data
 LIST_CATEGORY_SCRIPT_PATH=$SCRIPT_DIR/mediawiki/scripts/listCategoryEntries.pl
 TRANSLATE_LIST_SCRIPT_PATH=$SCRIPT_DIR/build_translated_list.pl
 COMPARE_LISTS_SCRIPT_PATH=$SCRIPT_DIR/compare_lists.pl
