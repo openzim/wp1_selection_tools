@@ -188,8 +188,8 @@ do
     UPPER_LIMIT=$((UPPER_LIMIT + 10000))
     echo "   from pl_from from $LOWER_LIMIT to $UPPER_LIMIT..."
     $MYSQL \
-	"SELECT pl_from, pl_title FROM pagelinks WHERE pl_namespace = 0 AND pl_from_namespace = 0 AND pl_from >= $LOWER_LIMIT AND pl_from < $UPPER_LIMIT" \
-	-N -h ${DB_HOST} ${DB} >> $DIR/pagelinks
+        "SELECT pl_from, pl_title FROM pagelinks WHERE pl_namespace = 0 AND pl_from_namespace = 0 AND pl_from >= $LOWER_LIMIT AND pl_from < $UPPER_LIMIT" \
+        -N -h ${DB_HOST} ${DB} >> $DIR/pagelinks
     NEW_SIZE=`ls -la $DIR/pagelinks 2> /dev/null | cut -d " " -f5`
     if [ x$OLD_SIZE == x$NEW_SIZE ]
     then
@@ -286,11 +286,11 @@ for TOP in 10 50 100 500 1000 5000 10000 50000 100000 500000 1000000
 do
     if [ "$MAX" -gt "$TOP" ]
     then
-	head -n $TOP "$DIR/scores" | cut -f 1 > "$DIR/tops/$TOP"
-	LAST_TOP=$TOP
+        head -n $TOP "$DIR/scores" | cut -f 1 > "$DIR/tops/$TOP"
+        LAST_TOP=$TOP
     else
-	rm -f "$DIR/tops/$LAST_TOP"
-	break
+        rm -f "$DIR/tops/$LAST_TOP"
+        break
     fi
 done
 

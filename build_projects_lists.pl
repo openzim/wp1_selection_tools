@@ -19,7 +19,7 @@ if (!-d $dir) {
 
 unless (-f $scoresFile && -f $allFile) {
     print STDERR "Files '$scoresFile' or '$allFile' do not exist, or are not readable.\n";
-    exit 1;    
+    exit 1;
 }
 
 # Create project directory
@@ -36,7 +36,7 @@ while(<FILE>) {
     my $line = $_;
     chomp($line);
     my ($pageTitle, $pageScore) = split("\t", $line);
-    $scores{$pageTitle} = $pageScore; 
+    $scores{$pageTitle} = $pageScore;
 }
 close(FILE);
 
@@ -48,9 +48,9 @@ while(<FILE>) {
     chomp($line);
     my ($pageTitle, $pageId, $pageSize, $pageLinksCount, $langLinksCount, $pageViewsCount, @pageRatings) = split("\t", $line);
     for my $pageRating (@pageRatings) {
-	my ($project, $rating) = split("=", $pageRating);
-	my $fd = getProjectFd($project);
-	print $fd $pageTitle."\t".$scores{$pageTitle}."\n"; 
+        my ($project, $rating) = split("=", $pageRating);
+        my $fd = getProjectFd($project);
+        print $fd $pageTitle."\t".$scores{$pageTitle}."\n";
     }
 }
 close(FILE);
@@ -80,7 +80,7 @@ exit 0;
 
 sub getProjectFd {
     my $project  = shift;
-    
+
     return $projectsFds{$project} if exists($projectsFds{$project});
 
     my $project_escaped = $project =~ s/\//_/gr;
