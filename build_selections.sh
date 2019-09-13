@@ -298,11 +298,11 @@ done
 # Split scores by wikiproject for WPEN                               #
 ######################################################################
 
+echo "Creating wikiprojet selections..."
+echo "project: page_title (one file per project)" >> $README
+ulimit -n 3000
 if [ $WIKI == 'enwiki' ]
 then
-    echo "Creating wikiprojet selections..."
-    echo "project: page_title (one file per project)" >> $README
-    ulimit -n 3000
     $PERL $SCRIPT_DIR/build_projects_lists.pl $DIR
     rm -rf $TMP/en.projects
     cp -r $DIR/projects $TMP/en.projects
@@ -312,6 +312,7 @@ then
     cp $DIR/langlinks $TMP/en.needed
 else
     grep -P "\t$WIKI_LANG\t" $TMP/en.needed/langlinks > $TMP/en.needed/langlinks.tmp
+    rm -rf $DIR/projects
     mkdir $DIR/projects
     for FILE in `find tmp/en.projects/ -type f`
     do
