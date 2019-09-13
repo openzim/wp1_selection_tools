@@ -314,7 +314,7 @@ else
     grep -P "\t$WIKI_LANG\t" $TMP/en.needed/langlinks > $TMP/en.needed/langlinks.tmp
     rm -rf $DIR/projects
     mkdir $DIR/projects
-    for FILE in `find tmp/en.projects/ -type f`
+    for FILE in `find $TMP/en.projects/ -type f`
     do
         $PERL $SCRIPT_DIR/build_translated_list.pl $FILE $WIKI_LANG > $DIR/projects/`basename $FILE`
     done
