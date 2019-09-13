@@ -87,7 +87,8 @@ curl -s https://dumps.wikimedia.org/other/pagecounts-ez/merged/ | \
     grep -v pagecounts-2012 | \
     grep -v pagecounts-2013 | \
     grep -v pagecounts-2014 | \
-    grep -v pagecounts-2015 > \
+    grep -v pagecounts-2015 | \
+    grep -v pagecounts-2016 > \
     $PAGEVIEW_FILES
 
 # Download pageview dump for all project for a month
