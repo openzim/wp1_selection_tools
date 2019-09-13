@@ -140,7 +140,7 @@ then
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=fr.wikipedia.org --category="Évaluation_des_articles_du_projet_Soins_infirmiers_et_profession_infirmière" \
           --category="Évaluation_des_articles_du_projet_Premiers_secours_et_secourisme" --category="Évaluation_des_articles_du_projet_Médecine" \
           --category="Évaluation_des_articles_du_projet_Anatomie" --category="Évaluation_des_articles_du_projet_Pharmacie" --path=w --exploration=5 --namespace=1 | \
-        sed 's/Talk://' | sort -u > "/tmp/medicine_fr"
+        sed 's/Discussion://' | sort -u > "/tmp/medicine_fr"
     cat "/tmp/medicine_fr" "tmp/medicine" | sort -u > "$CUSTOM_DIR/medicine"
 fi
 
