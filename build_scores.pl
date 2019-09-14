@@ -8,21 +8,21 @@ use utf8;
 my %topRatings;
 my %counts;
 my %qualityScores = (
-    FA-Class    => 500,
-    FL-Class    => 500,
-    A-Class     => 400,
-    GA-Class    => 400,
-    Bplus-Class => 350,
-    B-Class     => 300,
-    C-Class     => 225,
-    Start-Class => 150,
-    Stub-Class  => 50,
+    "FA-Class"    => 500,
+    "FL-Class"    => 500,
+    "A-Class"     => 400,
+    "GA-Class"    => 400,
+    "Bplus-Class" => 350,
+    "B-Class"     => 300,
+    "C-Class"     => 225,
+    "Start-Class" => 150,
+    "Stub-Class"  => 50,
 );
 my %importanceScores = (
-    Top-Class   => 400,
-    High-Class  => 300,
-    Mid-Class   => 200,
-    Low-Class   => 100,
+    "Top-Class"   => 400,
+    "High-Class"  => 300,
+    "Mid-Class"   => 200,
+    "Low-Class"   => 100,
 );
 
 # Check if directory exists
