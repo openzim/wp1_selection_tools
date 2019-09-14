@@ -157,7 +157,15 @@ sub compute_internal_importance {
 sub compute_external_importance {
     my ($pageLinksCount, $langLinksCount, $pageViewsCount) = @_;
 
-    int(50 * myLog10($pageViewsCount) + 100 * myLog10($pageLinksCount) + 250 * myLog10($langLinksCount))
+    # This is the original WP1 0.7 method (conceived for the WPEN
+    # selection). This method has proven to be quite weak in case of
+    # $pageLinksCount and $langLinksCount are quite high because of
+    # artefacts (lots of detailed articles pointing to a global
+    # generic one).
+    # int(50 * myLog10($pageViewsCount) + 100 * myLog10($pageLinksCount) + 250 * myLog10($langLinksCount))
+
+    # Lat attempt to find a better score
+    int(100 * myLog10($pageViewsCount) + 100 * myLog10($pageLinksCount) + 100 * myLog10($langLinksCount))
 }
 
 # get the list of projects

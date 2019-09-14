@@ -130,7 +130,7 @@ do
         cut -d " " -f2,3 | \
         egrep -v `cat $NAMESPACES` \
         > $PAGEVIEWS.tmp
-    cat $PAGEVIEWS $PAGEVIEWS.tmp | \
+        cat $PAGEVIEWS $PAGEVIEWS.tmp | \
         sort -t " " -k1,1 -i | \
         $PERL -ne '($title, $count) = split(" ", $_); if ($title eq $last) { $last_count += $count } else { print "$last\t$last_count\n"; $last=$title; $last_count=$count;}' \
         > $PAGEVIEWS.new
