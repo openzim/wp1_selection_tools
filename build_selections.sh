@@ -316,7 +316,7 @@ else
     mkdir $DIR/projects
     for FILE in `find $TMP/en.projects/ -type f`
     do
-        $PERL $SCRIPT_DIR/build_translated_list.pl $FILE $WIKI_LANG > $DIR/projects/`basename $FILE`
+        $PERL $SCRIPT_DIR/build_translated_list.pl $FILE $WIKI_LANG $DIR/scores > $DIR/projects/`basename $FILE`
     done
     rm -f $TMP/en.needed/langlinks.tmp
 fi

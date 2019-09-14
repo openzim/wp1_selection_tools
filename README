@@ -50,7 +50,8 @@ directory.
   in English.
 
 * build_translated_list.pl translates a list in the given language
-  based on Wikipedia in English language links.
+  based on Wikipedia in English language links and local language
+  scores.
 
 == Download ==
 
