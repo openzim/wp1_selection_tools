@@ -136,7 +136,7 @@ then
     echo "Portail:Tunisie/Index thématique" >> "$CUSTOM_DIR/tunisie"
 
     # Medicine
-    $PERL $TRANSLATE_LIST_SCRIPT_PATH $TMP/en.customs/medicine $WIKI_LANG > "/tmp/medicine"
+    $PERL $TRANSLATE_LIST_SCRIPT_PATH $TMP/en.customs/medicine $WIKI_LANG "$CUSTOM_DIR/../scores" > "/tmp/medicine"
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=fr.wikipedia.org --category="Évaluation_des_articles_du_projet_Soins_infirmiers_et_profession_infirmière" \
           --category="Évaluation_des_articles_du_projet_Premiers_secours_et_secourisme" --category="Évaluation_des_articles_du_projet_Médecine" \
           --category="Évaluation_des_articles_du_projet_Anatomie" --category="Évaluation_des_articles_du_projet_Pharmacie" --path=w --exploration=5 --namespace=1 | \
