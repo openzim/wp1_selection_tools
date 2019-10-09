@@ -10,6 +10,7 @@ SCRIPT_DIR=`dirname $SCRIPT_PATH | sed -e 's/\/$//'`
 export PATH=$PATH:$SCRIPT_DIR
 TMP=$SCRIPT_DIR/data
 LIST_CATEGORY_SCRIPT_PATH=$SCRIPT_DIR/mediawiki/scripts/listCategoryEntries.pl
+LIST_LANG_LINKS_PATH=$SCRIPT_DIR/mediawiki/scripts/listLangLinks.pl
 TRANSLATE_LIST_SCRIPT_PATH=$SCRIPT_DIR/build_translated_list.pl
 COMPARE_LISTS_SCRIPT_PATH=$SCRIPT_DIR/compare_lists.pl
 
@@ -94,6 +95,10 @@ then
     echo "Book:Rheumatology" >> "$CUSTOM_DIR/medicine"
     echo "Book:Skin diseases" >> "$CUSTOM_DIR/medicine"
     echo "Book:Women's_health" >> "$CUSTOM_DIR/medicine"
+    cat "$CUSTOM_DIR/medicine" | $LIST_LANG_LINKS_PATH --host=en.wikipedia.org --path=w --readFromStdin --language=ja --language=as --language=bn --language=gu --language=hi \
+                                                       --language=kn --language=ml --language=de --language=bpy --language=mr --language=lo --language=or --language=pa \
+                                                       --language=ta --language=te --language=ur --language=fa --language=fr --language=zh --language=pt --language=ar \
+                                                       --language=es --language=it > "$TMP/en.needed/medicine.langlinks"
 
     # Ray Charles
     $PERL $LIST_CATEGORY_SCRIPT_PATH --path=w --host=en.wikipedia.org --category="Ray_Charles" --namespace=0 --explorationDepth=3 | sort -u > "$CUSTOM_DIR/ray_charles"
