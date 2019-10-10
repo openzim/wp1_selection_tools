@@ -199,9 +199,9 @@ done
 
 # Language links
 echo "Gathering language links..."
-echo "langlinks: source_page_id language_code target_page_title" >> $README
+echo "langlinks: source_page_title language_code target_page_title" >> $README
 $MYSQL \
-    "SELECT ll_from, ll_lang, ll_title FROM langlinks, page WHERE langlinks.ll_from = page.page_id AND page.page_namespace = 0" \
+    "SELECT page_title, ll_lang, ll_title FROM langlinks, page WHERE langlinks.ll_from = page.page_id AND page.page_namespace = 0" \
     -N -h ${DB_HOST} ${DB} | sed 's/ /_/g' > $DIR/langlinks
 
 # Redirects

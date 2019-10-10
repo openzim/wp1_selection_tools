@@ -62,8 +62,7 @@ open(FILE, '<', $langlinksFile) or die("Unable to open file $langlinksFile\n");
 while(<FILE>) {
     my $line = $_;
     chomp($line);
-    my ($pageId) = split("\t", $line);
-    my $pageTitle = $id2title[$pageId];
+    my ($pageTitle) = split("\t", $line);
     next unless ($pageTitle);
     $counts{$pageTitle}{"ll"} = exists($counts{$pageTitle}{"ll"}) ? $counts{$pageTitle}{"ll"}+1 : 0;
 }
