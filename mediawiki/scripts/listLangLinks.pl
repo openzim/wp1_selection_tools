@@ -49,8 +49,9 @@ $site->path($path);
 foreach my $title (@titles) {
     my %langLinks = map { $_->{lang} => $_->{content} =~ s/ /_/gr } @{$site->langLinks($title)};
     foreach my $language (@languages) {
-	my $line = $title."\t".$language."\t".($langLinks{$language} || "")."\n";
-	utf8::encode($line);
+        next unless $langLinks{$language};
+        my $line = $title."\t".$language."\t".$langLinks{$language}."\n";
+        utf8::encode($line);
 	print $line;
     }
 }
