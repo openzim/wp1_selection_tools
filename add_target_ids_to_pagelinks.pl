@@ -12,7 +12,7 @@ my %pages;
 my $FILE;
 
 # Put pages in memory
-open $FILE, "lzma -dc $page_path |" or die "Could not open $page_path: $!";
+open $FILE, "lzma -9 -T 0 -dc $page_path |" or die "Could not open $page_path: $!";
 while (<$FILE>) {
     my $line = $_;
     chomp($line);
@@ -21,7 +21,7 @@ while (<$FILE>) {
 }
 
 # Match pagelinks
-open $FILE, "lzma -dc $pagelinks_path |" or die "Could not open $pagelinks_path: $!";
+open $FILE, "lzma -9 -T 0 -dc $pagelinks_path |" or die "Could not open $pagelinks_path: $!";
 while (<$FILE>) {
     my $line = $_;
     chomp($line);

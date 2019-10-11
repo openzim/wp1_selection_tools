@@ -348,16 +348,18 @@ fi
 ######################################################################
 
 echo "Compressing all files..."
-cat $DIR/pages     | lzma -9 > $DIR/pages.lzma
-cat $DIR/pageviews | lzma -9 > $DIR/pageviews.lzma
-cat $DIR/pagelinks | lzma -9 > $DIR/pagelinks.lzma
-cat $DIR/langlinks | lzma -9 > $DIR/langlinks.lzma
-cat $DIR/redirects | lzma -9 > $DIR/redirects.lzma
-cat $DIR/scores    | lzma -9 > $DIR/scores.lzma
-cat $DIR/all       | lzma -9 > $DIR/all.lzma
+LZMA="lzma -9 -T 0"
 
-if [ -f $DIR/ratings ] ; then cat $DIR/ratings | lzma -9 > $DIR/ratings.lzma; fi
-if [ -f $DIR/vital ] ; then cat $DIR/vital | lzma -9 > $DIR/vital.lzma; fi
+cat $DIR/pages     | $LZMA > $DIR/pages.lzma
+cat $DIR/pageviews | $LZMA > $DIR/pageviews.lzma
+cat $DIR/pagelinks | $LZMA > $DIR/pagelinks.lzma
+cat $DIR/langlinks | $LZMA > $DIR/langlinks.lzma
+cat $DIR/redirects | $LZMA > $DIR/redirects.lzma
+cat $DIR/scores    | $LZMA > $DIR/scores.lzma
+cat $DIR/all       | $LZMA > $DIR/all.lzma
+
+if [ -f $DIR/ratings ] ; then cat $DIR/ratings | $LZMA > $DIR/ratings.lzma; fi
+if [ -f $DIR/vital ] ; then cat $DIR/vital | $LZMA > $DIR/vital.lzma; fi
 if [ -d $DIR/projects ] ; then cd $DIR ; 7za a -tzip -mx9 -mmt6 projects.zip projects ; cd .. ; fi
 if [ -d $DIR/tops ] ; then cd $DIR ; 7za a -tzip -mx9 -mmt6 tops.zip tops ; cd .. ; fi
 if [ -d $DIR/customs ] ; then cd $DIR ; 7za a -tzip -mx9 -mmt6 customs.zip customs ; cd .. ; fi
