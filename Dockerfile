@@ -8,7 +8,6 @@ RUN apt-get update && \
     openssh-client liblist-compare-perl libwww-perl
 
 COPY mediawiki/ mediawiki/
-COPY add_target_ids_to_pagelinks.pl .
 COPY build_all_selections.sh .
 COPY build_biggest_wikipedia_list.sh .
 COPY build_en_vital_articles_list.sh .
