@@ -12,7 +12,6 @@ set -o pipefail
 WIKI_LANG=$1
 WIKI_LANG_SHORT=`echo $WIKI_LANG | sed 's/\(^..\).*/\1/'`
 WIKI=${WIKI_LANG}wiki
-PAGEVIEW_CODE=${WIKI_LANG}.z
 
 # WIKI DB
 DB_HOST=${WIKI_LANG_SHORT}wiki.analytics.db.svc.eqiad.wmflabs
@@ -28,13 +27,15 @@ SCRIPT_DIR=`dirname $SCRIPT_PATH | sed -e 's/\/$//'`
 export PATH=$PATH:$SCRIPT_DIR
 
 # Setup global variables
-TMP=$SCRIPT_DIR/data
+DATA=$SCRIPT_DIR/data
+TMP=$DATA/tmp
 DIR=$TMP/${WIKI}_`date +"%Y-%m"`
 README=$DIR/README
 
 # Create directories
-if [ ! -d $TMP ]; then mkdir $TMP &> /dev/null; fi
-if [ ! -d $DIR ]; then mkdir $DIR &> /dev/null; fi
+if [ ! -d $DATA ]; then mkdir $DATA &> /dev/null; fi
+if [ ! -d $TMP  ]; then mkdir $TMP &> /dev/null; fi
+if [ ! -d $DIR  ]; then mkdir $DIR &> /dev/null; fi
 
 # MySQL command line
 MYSQL='mysql --defaults-file=~/replica.my.cnf --ssl-mode=DISABLED --quick -e'
@@ -91,20 +92,19 @@ curl -s https://dumps.wikimedia.org/other/pagecounts-ez/merged/ | \
     grep -v pagecounts-2016 > \
     $PAGEVIEW_FILES
 
-# Download pageview dump for all project for a month
+# Download pageview dumps for all projects
 NEW_PAGEVIEW_FILES=$TMP/new_pageview_files_$WIKI
-PAGEVIEWS=$TMP/pageviews_$WIKI
+PAGEVIEWS=$DATA/pageviews_$WIKI
 cat /dev/null > $NEW_PAGEVIEW_FILES
 for FILE in `cat $PAGEVIEW_FILES`
 do
-
     OLD_SIZE=0
-    if [ -f $TMP/$FILE ]
+    if [ -f $DATA/$FILE ]
     then
-        OLD_SIZE=`ls -la $TMP/$FILE 2> /dev/null | cut -d " " -f5`
+        OLD_SIZE=`ls -la $DATA/$FILE 2> /dev/null | cut -d " " -f5`
     fi
-    wget -c https://dumps.wikimedia.org/other/pagecounts-ez/merged/$FILE -O $TMP/$FILE
-    NEW_SIZE=`ls -la $TMP/$FILE 2> /dev/null | cut -d " " -f5`
+    wget -c https://dumps.wikimedia.org/other/pagecounts-ez/merged/$FILE -O $DATA/$FILE
+    NEW_SIZE=`ls -la $DATA/$FILE 2> /dev/null | cut -d " " -f5`
 
     if [ x$OLD_SIZE != x$NEW_SIZE -o ! -f $PAGEVIEWS ]
     then
@@ -115,6 +115,9 @@ do
 done
 
 # Extract the content by filtering by project
+PAGEVIEW_CODE=${WIKI_LANG}.z
+PAGEVIEWS_TMP=$TMP/pageviews_$WIKI.tmp
+PAGEVIEWS_NEW=$TMP/pageviews_$WIKI.new
 if [ ! -f $PAGEVIEWS ]
 then
     cat /dev/null > $PAGEVIEWS
@@ -123,19 +126,19 @@ fi
 OLD_SIZE=`ls -la $PAGEVIEWS 2> /dev/null | cut -d " " -f5`
 for FILE in `cat $NEW_PAGEVIEW_FILES | grep NEW | cut -d " " -f1`
 do
-    echo "Parsing $TMP/$FILE..."
-    cat $TMP/$FILE | \
+    echo "Parsing $DATA/$FILE..."
+    cat $DATA/$FILE | \
         bzcat | \
         grep "^$PAGEVIEW_CODE" | \
         cut -d " " -f2,3 | \
         egrep -v `cat $NAMESPACES` \
-        > $PAGEVIEWS.tmp
-        cat $PAGEVIEWS $PAGEVIEWS.tmp | \
+        > $PAGEVIEWS_TMP
+        cat $PAGEVIEWS $PAGEVIEWS_TMP | \
         sort -t " " -k1,1 -i | \
         $PERL -ne '($title, $count) = split(" ", $_); if ($title eq $last) { $last_count += $count } else { print "$last\t$last_count\n"; $last=$title; $last_count=$count;}' \
-        > $PAGEVIEWS.new
-    mv $PAGEVIEWS.new $PAGEVIEWS
-    rm $PAGEVIEWS.tmp
+        > $PAGEVIEWS_NEW
+    mv $PAGEVIEWS_NEW $PAGEVIEWS
+    rm $PAGEVIEWS_TMP
     ENTRY_COUNT=`wc $PAGEVIEWS | tr -s ' ' | cut -d " " -f2`
     echo "   '$PAGEVIEWS' has $ENTRY_COUNT entries."
 done
@@ -148,7 +151,7 @@ cp $PAGEVIEWS $DIR/pageviews
 echo "pageviews: page_title view_count" > $README
 
 ######################################################################
-# GATHER pages key values                                            #
+# GATHER PAGES KEYS VALUES                                           #
 ######################################################################
 
 # Pages
@@ -212,7 +215,7 @@ $MYSQL \
     -N -h ${DB_HOST} ${DB} > $DIR/redirects
 
 ######################################################################
-# GATHER WP1 ratings for WPEN                                        #
+# GATHER WP1 RATINGS FOR WPEN                                        #
 ######################################################################
 
 if [ $WIKI == 'enwiki' ]
@@ -242,7 +245,7 @@ then
 fi
 
 ######################################################################
-# GATHER Vital Articles for WPEN                                     #
+# GATHER VITAL ARTICLES FOR WPEN                                     #
 ######################################################################
 
 if [ $WIKI == 'enwiki' ]
@@ -254,7 +257,7 @@ then
 fi
 
 ######################################################################
-# MERGE lists                                                        #
+# MERGE LISTS                                                        #
 ######################################################################
 
 echo "Merging lists..."
@@ -262,7 +265,7 @@ echo "all: page_title page_id page_size pagelinks_count langlinks_count pageview
 $PERL $SCRIPT_DIR/merge_lists.pl $DIR > $DIR/all
 
 ######################################################################
-# COMPUTE scores                                                    #
+# COMPUTE SCORES                                                     #
 ######################################################################
 
 echo "Computing scores..."
@@ -295,30 +298,32 @@ do
 done
 
 ######################################################################
-# Split scores by wikiproject for WPEN                               #
+# COMPUTE PROJECT SELECTIONS                                         #
 ######################################################################
 
 echo "Creating wikiprojet selections..."
 echo "project: page_title (one file per project)" >> $README
 ulimit -n 3000
+
+EN_NEEDED=$DATA/en.needed
+WIKI_LANGLINKS=$TMP/$WIKI_LANG.langlinks
+
 if [ $WIKI == 'enwiki' ]
 then
     $PERL $SCRIPT_DIR/build_projects_lists.pl $DIR
-    rm -rf $TMP/en.projects
-    cp -r $DIR/projects $TMP/en.projects
-    rm -rf $TMP/en.needed
-    mkdir $TMP/en.needed
-    cp $DIR/pages $TMP/en.needed
-    cp $DIR/langlinks $TMP/en.needed
+    rm -rf $EN_NEEDED
+    mkdir $EN_NEEDED
+    cp -r $DIR/projects $EN_NEEDED
+    cp $DIR/pages $EN_NEEDED
+    cp $DIR/langlinks $EN_NEEDED
 else
-    grep -P "\t$WIKI_LANG\t" $TMP/en.needed/langlinks > $TMP/en.needed/langlinks.tmp
+    grep -P "\t$WIKI_LANG\t" $EN_NEEDED/langlinks > $WIKI_LANGLINKS
     rm -rf $DIR/projects
     mkdir $DIR/projects
-    for FILE in `find $TMP/en.projects/ -type f`
+    for FILE in `find $EN_NEEDED/projects/ -type f`
     do
         $PERL $SCRIPT_DIR/build_translated_list.pl $FILE $WIKI_LANG $DIR/scores > $DIR/projects/`basename $FILE`
     done
-    rm -f $TMP/en.needed/langlinks.tmp
 fi
 
 ######################################################################
@@ -333,9 +338,7 @@ fi
 $SCRIPT_DIR/build_custom_selections.sh $WIKI_LANG $DIR/customs
 if [ $WIKI == 'enwiki' ]
 then
-    rm -rf $TMP/en.customs
-    mkdir $TMP/en.customs
-    cp -r $DIR/customs/* $TMP/en.customs
+    cp -r $DIR/customs $EN_NEEDED/customs
 fi
 
 ######################################################################
@@ -378,4 +381,5 @@ then
     rm $NAMESPACES
     rm $PAGEVIEW_FILES
     rm $NEW_PAGEVIEW_FILES
+    rm -f $WIKI_LANGLINKS
 fi

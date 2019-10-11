@@ -8,7 +8,8 @@ set -o pipefail
 SCRIPT_PATH=`readlink -f $0`
 SCRIPT_DIR=`dirname $SCRIPT_PATH | sed -e 's/\/$//'`
 export PATH=$PATH:$SCRIPT_DIR
-TMP=$SCRIPT_DIR/data
+DATA=$SCRIPT_DIR/data
+TMP=$DATA/tmp
 LIST_CATEGORY_SCRIPT_PATH=$SCRIPT_DIR/mediawiki/scripts/listCategoryEntries.pl
 LIST_LANG_LINKS_PATH=$SCRIPT_DIR/mediawiki/scripts/listLangLinks.pl
 TRANSLATE_LIST_SCRIPT_PATH=$SCRIPT_DIR/build_translated_list.pl
@@ -34,16 +35,10 @@ then
     exit 1
 fi
 
-# Prepare langlinks.tmp
-if [ $WIKI_LANG != 'en' ]
-then
-   grep -P "\t$WIKI_LANG\t" $TMP/en.needed/langlinks > $TMP/en.needed/langlinks.tmp
-fi
-
 # Translate custom selections in English
 if [ $WIKI_LANG != "en" ]
 then
-    for FILE in `find $TMP/en.customs/ -type f`
+    for FILE in `find $DATA/en.needed/customs/ -type f`
     do
         $PERL $TRANSLATE_LIST_SCRIPT_PATH "$FILE" $WIKI_LANG "$CUSTOM_DIR/../scores" > $CUSTOM_DIR/`basename $FILE`
     done
@@ -67,12 +62,12 @@ then
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Women's_health_articles" \
           --category="WikiProject_Microbiology_articles" --category="WikiProject_Physiology_articles" --category="WikiProject_Medicine_articles" \
           --category="WikiProject_Dentistry_articles" --category="WikiProject_Anatomy_articles" --category="WikiProject_Pharmacology_articles" \
-          --category="WikiProject_Sanitation_articles" | sed 's/Talk://' | sort -u > "/tmp/medicine_unfiltered"
+          --category="WikiProject_Sanitation_articles" | sed 's/Talk://' | sort -u > "$TMP/medicine_unfiltered"
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Hospitals_articles" \
           --category="WikiProject_History_of_Science_articles" --category="WikiProject_Academic_Journal_articles" \
           --category="WikiProject_Visual_arts_articles" --category="WikiProject_Biography_articles" \
-          --category="WikiProject_Companies_articles" | sed 's/Talk://' | sort -u > "/tmp/medicine_filter"
-    grep -Fxv -f "/tmp/medicine_filter" "/tmp/medicine_unfiltered" | sort -u > "$CUSTOM_DIR/medicine"
+          --category="WikiProject_Companies_articles" | sed 's/Talk://' | sort -u > "$TMP/medicine_filter"
+    grep -Fxv -f "$TMP/medicine_filter" "$TMP/medicine_unfiltered" | sort -u > "$CUSTOM_DIR/medicine"
     echo "Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine" >> "$CUSTOM_DIR/medicine"
     echo "Book:Cardiology" >> "$CUSTOM_DIR/medicine"
     echo "Book:Children's health" >> "$CUSTOM_DIR/medicine"
@@ -98,7 +93,7 @@ then
     cat "$CUSTOM_DIR/medicine" | $LIST_LANG_LINKS_PATH --host=en.wikipedia.org --path=w --readFromStdin --language=ja --language=as --language=bn --language=gu --language=hi \
                                                        --language=kn --language=ml --language=de --language=bpy --language=mr --language=lo --language=or --language=pa \
                                                        --language=ta --language=te --language=ur --language=fa --language=fr --language=zh --language=pt --language=ar \
-                                                       --language=es --language=it > "$TMP/en.needed/medicine.langlinks"
+                                                       --language=es --language=it > "$DATA/en.needed/medicine.langlinks"
 
     # Ray Charles
     $PERL $LIST_CATEGORY_SCRIPT_PATH --path=w --host=en.wikipedia.org --category="Ray_Charles" --namespace=0 --explorationDepth=3 | sort -u > "$CUSTOM_DIR/ray_charles"
@@ -109,27 +104,27 @@ then
 
     # Download list of articles to excludes from selections
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Biography_articles" \
-          --category="WikiProject_Companies_articles" | sed 's/Talk://' | sort -u > "/tmp/filter_out"
+          --category="WikiProject_Companies_articles" | sed 's/Talk://' | sort -u > "$TMP/filter_out"
 
     # Physics
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Physics_articles" | \
-        sed 's/Talk://' | sort -u > "/tmp/physics_unfiltered"
-    grep -Fxv -f "/tmp/filter_out" "/tmp/physics_unfiltered" | sort -u > "$CUSTOM_DIR/physics"
+        sed 's/Talk://' | sort -u > "$TMP/physics_unfiltered"
+    grep -Fxv -f "$TMP/filter_out" "$TMP/physics_unfiltered" | sort -u > "$CUSTOM_DIR/physics"
 
     # Molecular & Cell Biology
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Molecular_and_Cellular_Biology_articles" | \
-        sed 's/Talk://' | sort -u > "/tmp/molcell_unfiltered"
-    grep -Fxv -f "/tmp/filter_out" "/tmp/molcell_unfiltered" | sort -u > "$CUSTOM_DIR/molcell"
+        sed 's/Talk://' | sort -u > "$TMP/molcell_unfiltered"
+    grep -Fxv -f "$TMP/filter_out" "$TMP/molcell_unfiltered" | sort -u > "$CUSTOM_DIR/molcell"
 
     # Maths
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Mathematics_articles" | \
-        sed 's/Talk://' | sort -u > "/tmp/maths_unfiltered"
-    grep -Fxv -f "/tmp/filter_out" "/tmp/maths_unfiltered" | sort -u > "$CUSTOM_DIR/maths"
+        sed 's/Talk://' | sort -u > "$TMP/maths_unfiltered"
+    grep -Fxv -f "$TMP/filter_out" "$TMP/maths_unfiltered" | sort -u > "$CUSTOM_DIR/maths"
 
     # Chemistry
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Chemistry_articles" | \
-        sed 's/Talk://' | sort -u > "/tmp/chemistry_unfiltered"
-    grep -Fxv -f "/tmp/filter_out" "/tmp/chemistry_unfiltered" | sort -u > "$CUSTOM_DIR/chemistry"
+        sed 's/Talk://' | sort -u > "$TMP/chemistry_unfiltered"
+    grep -Fxv -f "$TMP/filter_out" "$TMP/chemistry_unfiltered" | sort -u > "$CUSTOM_DIR/chemistry"
 
 # French
 elif [ "$WIKI_LANG" == "fr" ]
@@ -141,13 +136,10 @@ then
     echo "Portail:Tunisie/Index thématique" >> "$CUSTOM_DIR/tunisie"
 
     # Medicine
-    $PERL $TRANSLATE_LIST_SCRIPT_PATH $TMP/en.customs/medicine $WIKI_LANG "$CUSTOM_DIR/../scores" > "/tmp/medicine"
+    $PERL $TRANSLATE_LIST_SCRIPT_PATH $DATA/en.needed/customs/medicine $WIKI_LANG "$CUSTOM_DIR/../scores" > "$TMP/medicine"
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=fr.wikipedia.org --category="Évaluation_des_articles_du_projet_Soins_infirmiers_et_profession_infirmière" \
           --category="Évaluation_des_articles_du_projet_Premiers_secours_et_secourisme" --category="Évaluation_des_articles_du_projet_Médecine" \
           --category="Évaluation_des_articles_du_projet_Anatomie" --category="Évaluation_des_articles_du_projet_Pharmacie" --path=w --exploration=5 --namespace=1 | \
-        sed 's/Discussion://' | sort -u > "/tmp/medicine_fr"
-    cat "/tmp/medicine_fr" "tmp/medicine" | sort -u > "$CUSTOM_DIR/medicine"
+        sed 's/Discussion://' | sort -u > "$TMP/medicine_fr"
+    cat "$TMP/medicine_fr" "$TMP/medicine" | sort -u > "$CUSTOM_DIR/medicine"
 fi
-
-# Clean
-rm -f $TMP/en.needed/langlinks.tmp

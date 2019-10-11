@@ -14,14 +14,14 @@ my %results;
 my $titleFile = $ARGV[0] || "";
 my $lang      = $ARGV[1] || "";
 my $scoreFile = $ARGV[2] || "";
-my $langLinks = "$FindBin::Bin/data/en.needed/langlinks.tmp";
+my $langLinks = "${FindBin::Bin}data/tmp/$lang.langlinks";
 
 if (!$lang) {
     print STDERR "Language is not set.\n";
     exit 1;
 }
 
-for my $file ($titleFile, $langLinks, $scoreFile, $pages) {
+for my $file ($titleFile, $langLinks, $scoreFile) {
     if (!-f $file) {
         print STDERR "File '$file' does not exist, is not a file or is not readable.\n";
         exit 1;
