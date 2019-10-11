@@ -1,7 +1,7 @@
 This tool allows to easily build non-topic centric selections of
 Wikipedia articles.
 
-== Requirements ==
+## Requirements
 
 To run it, you need:
 * MANDATORY: a GNU/Linux system
@@ -9,14 +9,14 @@ To run it, you need:
 * MANDATORY: an access to a Wikipedia database
 * OPTION: an access to enwp10 rating database for Wikipedia in English
 
-== Context ==
+## Context
 
 Many Wikipedias, in different languages, are over 500.000 articles and
 even if we can provide offline versions with a reasonnable size, this
 is still too much for many devices. That's why we need to build
 offline versions with only a selections with the TOP best articles.
 
-== Principle ==
+## Principle
 
 This tool builds lists of key values (pageviews, links, ...) about
 Wikipedia articles and put them in a directory. These key values are
@@ -24,7 +24,7 @@ everything we have as input to build smart selection algorithms. To
 get more detalis about the list, read the README in the language based
 directory.
 
-== Tools ==
+## Tools
 
 * build_biggest_wikipedia_list.sh give you the list of all
   wikipedia/languages with more than 500.000 entries.
@@ -53,7 +53,7 @@ directory.
   based on Wikipedia in English language links and local language
   scores.
 
-== Download ==
+## Download
 
 You can download the output of that scripts directly from
 download.kiwix.org/wp1/ using FTP, HTTP(s) or rsync.
@@ -66,7 +66,7 @@ for ENTRY in `rsync --recursive --list-only download.kiwix.org::download.kiwix.o
 do RADICAL=`echo $ENTRY | sed 's/_20[0-9][0-9]-[0-9][0-9]//g'`; \
 if [[ $LAST != $RADICAL ]] ; then echo $ENTRY ; LAST=$RADICAL ; fi ; done
 
-== VPS ==
+## VPS
 
 To run it on VPS via Docker:
 $ docker run -d --name wp1_selection_tools
