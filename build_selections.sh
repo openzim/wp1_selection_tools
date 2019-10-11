@@ -318,6 +318,8 @@ then
     cp $DIR/langlinks $EN_NEEDED
 else
     grep -P "\t$WIKI_LANG\t" $EN_NEEDED/langlinks > $WIKI_LANGLINKS
+    grep -P "\t$WIKI_LANG\t" $EN_NEEDED/medicine.langlinks > $WIKI_LANGLINKS
+    sort -u -o $WIKI_LANGLINKS $WIKI_LANGLINKS
     rm -rf $DIR/projects
     mkdir $DIR/projects
     for FILE in `find $EN_NEEDED/projects/ -type f`
