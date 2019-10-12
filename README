@@ -1,7 +1,18 @@
-This tool allows to easily build non-topic centric selections of
-Wikipedia articles.
+The **WP1 Selection tools** gather and compile multiple indicators to
+provide [Wikipedia](http://wikipedia.org) article subset
+selections. It has been created for the [Wikipedia
+1.0](https://en.wikipedia.org/wiki/Wikipedia:1) project and is
+complementary of the [WP1 engine](https://github.com/openzim/wp1).
 
-## Requirements
+The results are made available at
+[https://download.kiwix.org/wp1](https://download.kiwix.org/wp1).
+
+[![Docker Build Status](https://img.shields.io/docker/build/openzim/wp1_selection_tools)](https://hub.docker.com/r/openzim/wp1_selection_tools)
+[![CodeFactor](https://www.codefactor.io/repository/github/openzim/wp1_selection_tools/badge)](https://www.codefactor.io/repository/github/openzim/wp1_selection_tools)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+Requirements
+------------
 
 To run it, you need:
 * MANDATORY: a GNU/Linux system
@@ -9,14 +20,17 @@ To run it, you need:
 * MANDATORY: an access to a Wikipedia database
 * OPTION: an access to enwp10 rating database for Wikipedia in English
 
-## Context
+Context
+-------
 
-Many Wikipedias, in different languages, are over 500.000 articles and
-even if we can provide offline versions with a reasonnable size, this
-is still too much for many devices. That's why we need to build
-offline versions with only a selections with the TOP best articles.
+Many Wikipedias, in different languages, have more than 500.000
+articles and even if we can provide offline versions with a
+reasonnable size, this is still too much for many devices. That's why
+we need to build offline versions with only a selections with the TOP
+best articles.
 
-## Principle
+Principle
+---------
 
 This tool builds lists of key values (pageviews, links, ...) about
 Wikipedia articles and put them in a directory. These key values are
@@ -24,7 +38,8 @@ everything we have as input to build smart selection algorithms. To
 get more detalis about the list, read the README in the language based
 directory.
 
-## Tools
+Tools
+-----
 
 * build_biggest_wikipedia_list.sh give you the list of all
   wikipedia/languages with more than 500.000 entries.
@@ -50,7 +65,8 @@ directory.
   based on Wikipedia in English language links and local language
   scores.
 
-## Download
+Download
+--------
 
 You can download the output of that scripts directly from
 download.kiwix.org/wp1/ using FTP, HTTP(s) or rsync.
@@ -63,7 +79,8 @@ for ENTRY in `rsync --recursive --list-only download.kiwix.org::download.kiwix.o
 do RADICAL=`echo $ENTRY | sed 's/_20[0-9][0-9]-[0-9][0-9]//g'`; \
 if [[ $LAST != $RADICAL ]] ; then echo $ENTRY ; LAST=$RADICAL ; fi ; done
 
-## VPS
+VPS
+---
 
 To run it on VPS via Docker:
 $ docker run -d --name wp1_selection_tools
@@ -71,3 +88,9 @@ $ docker run -d --name wp1_selection_tools
   -v /srv/wp1_selection_tools/.ssh/:/root/.ssh \
   -v /srv/wp1_selection_tools/replica.my.cnf:/root/replica.my.cnf \
   openzim/wp1_selection_tools
+
+License
+-------
+
+[GPLv3](https://www.gnu.org/licenses/gpl-3.0) or later, see
+[LICENSE](LICENSE) for more details.
