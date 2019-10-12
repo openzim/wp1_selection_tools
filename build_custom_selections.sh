@@ -5,8 +5,8 @@ set -e
 set -o pipefail
 
 # Paths
-SCRIPT_PATH=`readlink -f $0`
-SCRIPT_DIR=`dirname $SCRIPT_PATH | sed -e 's/\/$//'`
+SCRIPT_PATH=$(readlink -f $0)
+SCRIPT_DIR=$(dirname $SCRIPT_PATH | sed -e 's/\/$//')
 export PATH=$PATH:$SCRIPT_DIR
 DATA=$SCRIPT_DIR/data
 TMP=$DATA/tmp
@@ -17,7 +17,7 @@ COMPARE_LISTS_SCRIPT_PATH=$SCRIPT_DIR/compare_lists.pl
 
 # Perl and sort(1) have locale issues, which can be avoided by
 # disabling locale handling entirely.
-PERL=`whereis perl | cut -f2 -d " "`
+PERL=$(whereis perl | cut -f2 -d " ")
 LANG=C
 export LANG
 
@@ -38,9 +38,9 @@ fi
 # Translate custom selections in English
 if [ $WIKI_LANG != "en" ]
 then
-    for FILE in `find $DATA/en.needed/customs/ -type f`
+    for FILE in $(find $DATA/en.needed/customs/ -type f)
     do
-        $PERL $TRANSLATE_LIST_SCRIPT_PATH "$FILE" $WIKI_LANG "$CUSTOM_DIR/../scores" > $CUSTOM_DIR/`basename $FILE`
+        $PERL $TRANSLATE_LIST_SCRIPT_PATH "$FILE" $WIKI_LANG "$CUSTOM_DIR/../scores" > $CUSTOM_DIR/$(basename $FILE)
     done
 fi
 

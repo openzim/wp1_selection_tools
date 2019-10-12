@@ -10,26 +10,26 @@ set -o pipefail
 
 # Parse command line
 WIKI_LANG=$1
-WIKI_LANG_SHORT=`echo $WIKI_LANG | sed 's/\(^..\).*/\1/'`
+WIKI_LANG_SHORT=$(echo $WIKI_LANG | sed 's/\(^..\).*/\1/')
 WIKI=${WIKI_LANG}wiki
 
 # WIKI DB
 DB_HOST=${WIKI_LANG_SHORT}wiki.analytics.db.svc.eqiad.wmflabs
-DB=`echo ${WIKI} | sed 's/-/_/g'`_p
+DB=$(echo ${WIKI} | sed 's/-/_/g')_p
 
 # WP1 DB
 WP1_DB_HOST=tools.db.svc.eqiad.wmflabs
 WP1_DB=s51114_enwp10
 
 # Update PATH
-SCRIPT_PATH=`readlink -f $0`
-SCRIPT_DIR=`dirname $SCRIPT_PATH | sed -e 's/\/$//'`
+SCRIPT_PATH=$(readlink -f $0)
+SCRIPT_DIR=$(dirname $SCRIPT_PATH | sed -e 's/\/$//')
 export PATH=$PATH:$SCRIPT_DIR
 
 # Setup global variables
 DATA=$SCRIPT_DIR/data
 TMP=$DATA/tmp
-DIR=$TMP/${WIKI}_`date +"%Y-%m"`
+DIR=$TMP/${WIKI}_$(date +"%Y-%m")
 README=$DIR/README
 
 # Create directories
@@ -42,7 +42,7 @@ MYSQL='mysql --defaults-file=~/replica.my.cnf --ssl-mode=DISABLED --quick -e'
 
 # Perl and sort(1) have locale issues, which can be avoided by
 # disabling locale handling entirely.
-PERL=`whereis perl | cut -f2 -d " "`
+PERL=$(whereis perl | cut -f2 -d " ")
 LANG=C
 export LANG
 
@@ -96,15 +96,15 @@ curl -s https://dumps.wikimedia.org/other/pagecounts-ez/merged/ | \
 NEW_PAGEVIEW_FILES=$TMP/new_pageview_files_$WIKI
 PAGEVIEWS=$DATA/pageviews_$WIKI
 cat /dev/null > $NEW_PAGEVIEW_FILES
-for FILE in `cat $PAGEVIEW_FILES`
+for FILE in $(cat $PAGEVIEW_FILES)
 do
     OLD_SIZE=0
     if [ -f $DATA/$FILE ]
     then
-        OLD_SIZE=`ls -la $DATA/$FILE 2> /dev/null | cut -d " " -f5`
+        OLD_SIZE=$(ls -la $DATA/$FILE 2> /dev/null | cut -d " " -f5)
     fi
     wget -c https://dumps.wikimedia.org/other/pagecounts-ez/merged/$FILE -O $DATA/$FILE
-    NEW_SIZE=`ls -la $DATA/$FILE 2> /dev/null | cut -d " " -f5`
+    NEW_SIZE=$(ls -la $DATA/$FILE 2> /dev/null | cut -d " " -f5)
 
     if [ x$OLD_SIZE != x$NEW_SIZE -o ! -f $PAGEVIEWS ]
     then
@@ -123,15 +123,15 @@ then
     cat /dev/null > $PAGEVIEWS
 fi
 
-OLD_SIZE=`ls -la $PAGEVIEWS 2> /dev/null | cut -d " " -f5`
-for FILE in `cat $NEW_PAGEVIEW_FILES | grep NEW | cut -d " " -f1`
+OLD_SIZE=$(ls -la $PAGEVIEWS 2> /dev/null | cut -d " " -f5)
+for FILE in $(cat $NEW_PAGEVIEW_FILES | grep NEW | cut -d " " -f1)
 do
     echo "Parsing $DATA/$FILE..."
     cat $DATA/$FILE | \
         bzcat | \
         grep "^$PAGEVIEW_CODE" | \
         cut -d " " -f2,3 | \
-        egrep -v `cat $NAMESPACES` \
+        egrep -v $(cat $NAMESPACES) \
         > $PAGEVIEWS_TMP
         cat $PAGEVIEWS $PAGEVIEWS_TMP | \
         sort -t " " -k1,1 -i | \
@@ -139,10 +139,10 @@ do
         > $PAGEVIEWS_NEW
     mv $PAGEVIEWS_NEW $PAGEVIEWS
     rm $PAGEVIEWS_TMP
-    ENTRY_COUNT=`wc $PAGEVIEWS | tr -s ' ' | cut -d " " -f2`
+    ENTRY_COUNT=$(wc $PAGEVIEWS | tr -s ' ' | cut -d " " -f2)
     echo "   '$PAGEVIEWS' has $ENTRY_COUNT entries."
 done
-NEW_SIZE=`ls -la $PAGEVIEWS 2> /dev/null | cut -d " " -f5`
+NEW_SIZE=$(ls -la $PAGEVIEWS 2> /dev/null | cut -d " " -f5)
 
 # Copy the result
 cp $PAGEVIEWS $DIR/pageviews
@@ -170,7 +170,7 @@ do
     $MYSQL \
         "SELECT page.page_id, page.page_title, revision.rev_len, page.page_is_redirect FROM page, revision WHERE page.page_namespace = 0 AND revision.rev_id = page.page_latest AND page.page_id >= $LOWER_LIMIT AND page.page_id < $UPPER_LIMIT" \
         -N -h ${DB_HOST} ${DB} >> $DIR/pages
-    NEW_SIZE=`ls -la $DIR/pages 2> /dev/null | cut -d " " -f5`
+    NEW_SIZE=$(ls -la $DIR/pages 2> /dev/null | cut -d " " -f5)
     if [ x$OLD_SIZE == x$NEW_SIZE ]
     then
         break
@@ -193,7 +193,7 @@ do
     $MYSQL \
         "SELECT pl_from, pl_title FROM pagelinks WHERE pl_namespace = 0 AND pl_from_namespace = 0 AND pl_from >= $LOWER_LIMIT AND pl_from < $UPPER_LIMIT" \
         -N -h ${DB_HOST} ${DB} >> $DIR/pagelinks
-    NEW_SIZE=`ls -la $DIR/pagelinks 2> /dev/null | cut -d " " -f5`
+    NEW_SIZE=$(ls -la $DIR/pagelinks 2> /dev/null | cut -d " " -f5)
     if [ x$OLD_SIZE == x$NEW_SIZE ]
     then
         break
@@ -227,7 +227,7 @@ then
     echo "ratings: page_title project quality importance" >> $README
 
     echo "Gathering importances..."
-    IMPORTANCES=`$MYSQL "SELECT DISTINCT r_importance FROM ratings WHERE r_importance IS NOT NULL" -N -h ${WP1_DB_HOST} ${WP1_DB} | tr '\n' ' ' | sed -e 's/[ ]*$//'`
+    IMPORTANCES=$($MYSQL "SELECT DISTINCT r_importance FROM ratings WHERE r_importance IS NOT NULL" -N -h ${WP1_DB_HOST} ${WP1_DB} | tr '\n' ' ' | sed -e 's/[ ]*$//')
     IFS=$' '
     for IMPORTANCE_RATING in $IMPORTANCES
     do
@@ -278,7 +278,7 @@ $PERL $SCRIPT_DIR/build_scores.pl $DIR/all | sort -t$'\t' -k2 -n -r > $DIR/score
 
 echo "top: page_title (one file per TOP selection)" >> $README
 echo "Creating TOP selections..."
-MAX=`wc -l "$DIR/scores" | cut -d ' ' -f1`;
+MAX=$(wc -l "$DIR/scores" | cut -d ' ' -f1)
 LAST_TOP=0
 if [ ! -d "$DIR/tops" ]
 then
@@ -322,9 +322,9 @@ else
     sort -u -o $WIKI_LANGLINKS $WIKI_LANGLINKS
     rm -rf $DIR/projects
     mkdir $DIR/projects
-    for FILE in `find $EN_NEEDED/projects/ -type f`
+    for FILE in $(find $EN_NEEDED/projects/ -type f)
     do
-        $PERL $SCRIPT_DIR/build_translated_list.pl $FILE $WIKI_LANG $DIR/scores > $DIR/projects/`basename $FILE`
+        $PERL $SCRIPT_DIR/build_translated_list.pl $FILE $WIKI_LANG $DIR/scores > $DIR/projects/$(basename $FILE)
     done
 fi
 
@@ -361,14 +361,14 @@ if [ -d $DIR/customs ] ; then cd $DIR ; $ZIP customs.zip customs ; cd .. ; fi
 
 rm -rf $DIR/vital $DIR/ratings $DIR/pages $DIR/pageviews \
    $DIR/pagelinks $DIR/langlinks $DIR/redirects $DIR/all \
-   $DIR/scores # $DIR/projects $DIR/tops $DIR/customs
+   $DIR/scores
 
 ######################################################################
 # UPLOAD to wp1.kiwix.org                                            #
 ######################################################################
 
 echo "Upload $DIR to download.kiwix.org"
-scp -o StrictHostKeyChecking=no -r $DIR `cat $SCRIPT_DIR/remote`
+scp -o StrictHostKeyChecking=no -r $DIR $(cat $SCRIPT_DIR/remote)
 
 ######################################################################
 # CLEAN DIRECTORY                                                    #
