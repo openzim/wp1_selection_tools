@@ -69,7 +69,7 @@ fi
 NAMESPACES=$TMP/namespaces_$WIKI
 curl -s "https://$WIKI_LANG.wikipedia.org/w/api.php?action=query&meta=siteinfo&siprop=namespaces&formatversion=2&format=xml" | \
     xml2 2> /dev/null | \
-    egrep "@(canonical|ns)=.+" | \
+    grep -E "@(canonical|ns)=.+" | \
     sed "s/.*=//" | \
     sed "s/ /_/g" | \
     sort -u | \
@@ -106,7 +106,7 @@ do
     wget -c https://dumps.wikimedia.org/other/pagecounts-ez/merged/$FILE -O $DATA/$FILE
     NEW_SIZE=$(ls -la $DATA/$FILE 2> /dev/null | cut -d " " -f5)
 
-    if [ x$OLD_SIZE != x$NEW_SIZE -o ! -f $PAGEVIEWS ]
+    if [ x$OLD_SIZE != x$NEW_SIZE ] || [ ! -f $PAGEVIEWS ]
     then
         echo "$FILE NEW" >> $NEW_PAGEVIEW_FILES
     else
@@ -124,16 +124,15 @@ then
 fi
 
 OLD_SIZE=$(ls -la $PAGEVIEWS 2> /dev/null | cut -d " " -f5)
-for FILE in $(cat $NEW_PAGEVIEW_FILES | grep NEW | cut -d " " -f1)
+for FILE in $(grep NEW $NEW_PAGEVIEW_FILES | cut -d " " -f1)
 do
     echo "Parsing $DATA/$FILE..."
-    cat $DATA/$FILE | \
-        bzcat | \
+    bzcat < "$DATA/$FILE" | \
         grep "^$PAGEVIEW_CODE" | \
         cut -d " " -f2,3 | \
-        egrep -v $(cat $NAMESPACES) \
+        grep -vE $(cat $NAMESPACES) \
         > $PAGEVIEWS_TMP
-        cat $PAGEVIEWS $PAGEVIEWS_TMP | \
+    cat $PAGEVIEWS $PAGEVIEWS_TMP | \
         sort -t " " -k1,1 -i | \
         $PERL -ne '($title, $count) = split(" ", $_); if ($title eq $last) { $last_count += $count } else { print "$last\t$last_count\n"; $last=$title; $last_count=$count;}' \
         > $PAGEVIEWS_NEW
@@ -161,7 +160,7 @@ rm -f $DIR/pages
 touch $DIR/pages
 NEW_SIZE=0
 UPPER_LIMIT=0;
-while [ 42 ]
+while [ x$OLD_SIZE != x$NEW_SIZE ]
 do
     OLD_SIZE=$NEW_SIZE
     LOWER_LIMIT=$UPPER_LIMIT
@@ -171,10 +170,6 @@ do
         "SELECT page.page_id, page.page_title, revision.rev_len, page.page_is_redirect FROM page, revision WHERE page.page_namespace = 0 AND revision.rev_id = page.page_latest AND page.page_id >= $LOWER_LIMIT AND page.page_id < $UPPER_LIMIT" \
         -N -h ${DB_HOST} ${DB} >> $DIR/pages
     NEW_SIZE=$(ls -la $DIR/pages 2> /dev/null | cut -d " " -f5)
-    if [ x$OLD_SIZE == x$NEW_SIZE ]
-    then
-        break
-    fi
 done
 
 # Page links
@@ -184,7 +179,7 @@ rm -f $DIR/pagelinks
 touch $DIR/pagelinks
 NEW_SIZE=0
 UPPER_LIMIT=0;
-while [ 42 ]
+while [ x$OLD_SIZE != x$NEW_SIZE ]
 do
     OLD_SIZE=$NEW_SIZE
     LOWER_LIMIT=$UPPER_LIMIT
@@ -194,10 +189,6 @@ do
         "SELECT pl_from, pl_title FROM pagelinks WHERE pl_namespace = 0 AND pl_from_namespace = 0 AND pl_from >= $LOWER_LIMIT AND pl_from < $UPPER_LIMIT" \
         -N -h ${DB_HOST} ${DB} >> $DIR/pagelinks
     NEW_SIZE=$(ls -la $DIR/pagelinks 2> /dev/null | cut -d " " -f5)
-    if [ x$OLD_SIZE == x$NEW_SIZE ]
-    then
-        break
-    fi
 done
 
 # Language links
@@ -374,11 +365,8 @@ scp -o StrictHostKeyChecking=no -r $DIR $(cat $SCRIPT_DIR/remote)
 # CLEAN DIRECTORY                                                    #
 ######################################################################
 
-if [ $? -eq 0 ]
-then
-    rm -rf $DIR
-    rm $NAMESPACES
-    rm $PAGEVIEW_FILES
-    rm $NEW_PAGEVIEW_FILES
-    rm -f $WIKI_LANGLINKS
-fi
+rm -rf $DIR
+rm $NAMESPACES
+rm $PAGEVIEW_FILES
+rm $NEW_PAGEVIEW_FILES
+rm -f $WIKI_LANGLINKS

@@ -90,10 +90,10 @@ then
     echo "Book:Rheumatology" >> "$CUSTOM_DIR/medicine"
     echo "Book:Skin diseases" >> "$CUSTOM_DIR/medicine"
     echo "Book:Women's_health" >> "$CUSTOM_DIR/medicine"
-    cat "$CUSTOM_DIR/medicine" | $LIST_LANG_LINKS_PATH --host=en.wikipedia.org --path=w --readFromStdin --language=ja --language=as --language=bn --language=gu --language=hi \
-                                                       --language=kn --language=ml --language=de --language=bpy --language=mr --language=lo --language=or --language=pa \
-                                                       --language=ta --language=te --language=ur --language=fa --language=fr --language=zh --language=pt --language=ar \
-                                                       --language=es --language=it > "$DATA/en.needed/medicine.langlinks"
+    $LIST_LANG_LINKS_PATH --host=en.wikipedia.org --path=w --readFromStdin --language=ja --language=as --language=bn --language=gu --language=hi \
+                          --language=kn --language=ml --language=de --language=bpy --language=mr --language=lo --language=or --language=pa \
+                          --language=ta --language=te --language=ur --language=fa --language=fr --language=zh --language=pt --language=ar \
+                          --language=es --language=it < "$CUSTOM_DIR/medicine" > "$DATA/en.needed/medicine.langlinks"
 
     # Ray Charles
     $PERL $LIST_CATEGORY_SCRIPT_PATH --path=w --host=en.wikipedia.org --category="Ray_Charles" --namespace=0 --explorationDepth=3 | sort -u > "$CUSTOM_DIR/ray_charles"

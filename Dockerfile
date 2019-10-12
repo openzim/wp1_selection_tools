@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:bionic
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -6,7 +6,9 @@ RUN apt-get update && \
     perl-modules-5.26 libxml-simple-perl \
     libgetargs-long-perl p7zip-full lzma \
     openssh-client liblist-compare-perl libwww-perl \
-    parallel
+    parallel && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY mediawiki/ mediawiki/
 COPY build_all_selections.sh .
