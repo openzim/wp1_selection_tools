@@ -74,20 +74,30 @@ download.kiwix.org/wp1/ using FTP, HTTP(s) or rsync.
 You might be interested by downloading only the last version, here is
 a small command (based on rsync) to retrieve the right directory name.
 
-for ENTRY in `rsync --recursive --list-only download.kiwix.org::download.kiwix.org/wp1/ \
-| tr -s ' ' | cut -d ' ' -f5 | grep wiki | grep -v '/' | sort -r` ; \
-do RADICAL=`echo $ENTRY | sed 's/_20[0-9][0-9]-[0-9][0-9]//g'`; \
-if [[ $LAST != $RADICAL ]] ; then echo $ENTRY ; LAST=$RADICAL ; fi ; done
+```bash
+for ENTRY in $(rsync --recursive --list-only download.kiwix.org::download.kiwix.org/wp1/ | tr -s ' ' | cut -d ' ' -f5 | grep wiki | grep -v '/' | sort -r)
+do
+    RADICAL=`echo $ENTRY | sed 's/_20[0-9][0-9]-[0-9][0-9]//g'`; \
+    if [[ $LAST != $RADICAL ]]
+    then
+        echo $ENTRY
+        LAST=$RADICAL
+    fi
+done
+```
 
 VPS
 ---
 
 To run it on VPS via Docker:
-$ docker run -d --name wp1_selection_tools
+
+```bash
+docker run -d --name wp1_selection_tools
   -v /srv/wp1_selection_tools/data:/data \
   -v /srv/wp1_selection_tools/.ssh/:/root/.ssh \
   -v /srv/wp1_selection_tools/replica.my.cnf:/root/replica.my.cnf \
   openzim/wp1_selection_tools
+```
 
 License
 -------
