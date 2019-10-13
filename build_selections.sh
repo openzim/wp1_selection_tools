@@ -365,8 +365,11 @@ scp -o StrictHostKeyChecking=no -r $DIR $(cat $SCRIPT_DIR/remote)
 # CLEAN DIRECTORY                                                    #
 ######################################################################
 
+echo "Remove temporary data"
 rm -rf $DIR
 rm $NAMESPACES
 rm $PAGEVIEW_FILES
 rm $NEW_PAGEVIEW_FILES
 rm -f $WIKI_LANGLINKS
+
+echo "Process finished for $WIKI"
