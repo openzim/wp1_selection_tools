@@ -10,7 +10,7 @@ set -o pipefail
 
 # Parse command line
 WIKI_LANG=$1
-WIKI_LANG_SHORT=$(echo $WIKI_LANG | sed 's/\(^.{2,3}\).*/\1/')
+WIKI_LANG_SHORT=$(echo $WIKI_LANG | sed 's/\(^[[:alpha:]]{2,3}\).*/\1/')
 WIKI=${WIKI_LANG}wiki
 
 # WIKI DB
