@@ -38,7 +38,7 @@ if [ ! -d $TMP  ]; then mkdir $TMP &> /dev/null; fi
 if [ ! -d $DIR  ]; then mkdir $DIR &> /dev/null; fi
 
 # MySQL command line
-MYSQL='mysql --defaults-file=~/replica.my.cnf --ssl-mode=DISABLED --quick -e'
+MYSQL='mysql --compress --defaults-file=~/replica.my.cnf --ssl-mode=DISABLED --quick -e'
 
 # Perl and sort(1) have locale issues, which can be avoided by
 # disabling locale handling entirely.
