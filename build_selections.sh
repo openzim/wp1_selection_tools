@@ -161,6 +161,7 @@ echo "Gathering pages..."
 echo "pages: page_id page_title page_size is_redirect" >> $README
 rm -f $DIR/pages
 touch $DIR/pages
+OLD_SIZE=
 NEW_SIZE=0
 UPPER_LIMIT=0;
 while [ x$OLD_SIZE != x$NEW_SIZE ]
@@ -180,6 +181,7 @@ echo "Gathering page links..."
 echo "pagelinks: source_page_id target_page_title" >> $README
 rm -f $DIR/pagelinks
 touch $DIR/pagelinks
+OLD_SIZE=
 NEW_SIZE=0
 UPPER_LIMIT=0;
 while [ x$OLD_SIZE != x$NEW_SIZE ]
