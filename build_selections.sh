@@ -340,7 +340,7 @@ fi
 ######################################################################
 
 echo "Compressing all files..."
-ZIP="7za a -tzip -mx9 -mmt6"
+ZIP="7za a -tzip"
 find $DIR -not -name README -maxdepth 1 -mindepth 1 | \
     $PARALLEL "$ZIP {}.zip {} && rm -rf {}"
 
