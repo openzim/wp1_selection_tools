@@ -313,10 +313,7 @@ else
     sort -u -o $WIKI_LANGLINKS $WIKI_LANGLINKS
     rm -rf $DIR/projects
     mkdir $DIR/projects
-    for FILE in $(find $EN_NEEDED/projects/ -type f)
-    do
-        $PERL $SCRIPT_DIR/build_translated_list.pl $FILE $WIKI_LANG $DIR/scores > $DIR/projects/$(basename $FILE)
-    done
+    find $EN_NEEDED/projects/ -type f | parallel -j8 "$PERL $SCRIPT_DIR/build_translated_list.pl {} $WIKI_LANG $DIR/scores > $DIR/projects/\$(basename {})"
 fi
 
 ######################################################################
