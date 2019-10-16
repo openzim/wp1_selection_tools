@@ -340,9 +340,9 @@ fi
 
 echo "Compressing all files..."
 ZIP="7za a -tzip -mx9 -mmt6"
-parallel --link $ZIP ::: \
+parallel --progress --link $ZIP ::: \
          $DIR/pages.zip $DIR/pageviews.zip $DIR/pagelinks.zip $DIR/langlinks.zip $DIR/redirects.zip $DIR/scores.zip $DIR/all.zip ::: \
-         $DIR/pages $DIR/pageviews $DIR/pagelinks $DIR/langlinks $DIR/redirects $DIR/scores $DIR/all || :
+         $DIR/pages     $DIR/pageviews     $DIR/pagelinks     $DIR/langlinks     $DIR/redirects     $DIR/scores     $DIR/all
 
 if [ -f $DIR/ratings ] ; then $ZIP $DIR/ratings.zip $DIR/ratings ; fi
 if [ -f $DIR/vital ] ; then $ZIP $DIR/vital.zip $DIR/vital ; fi
