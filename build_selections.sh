@@ -38,7 +38,10 @@ if [ ! -d $TMP  ]; then mkdir $TMP &> /dev/null; fi
 if [ ! -d $DIR  ]; then mkdir $DIR &> /dev/null; fi
 
 # MySQL command line
-MYSQL='mysql --compress --defaults-file=~/replica.my.cnf --ssl-mode=DISABLED --compress --execute'
+MYSQL='mysql --defaults-file=~/replica.my.cnf --ssl-mode=DISABLED --compress --execute'
+
+# To execute things in parallel
+PARALLEL='parallel -j8'
 
 # Perl and sort(1) have locale issues, which can be avoided by
 # disabling locale handling entirely.
@@ -313,7 +316,8 @@ else
     sort -u -o $WIKI_LANGLINKS $WIKI_LANGLINKS
     rm -rf $DIR/projects
     mkdir $DIR/projects
-    find $EN_NEEDED/projects/ -type f | parallel -j8 "$PERL $SCRIPT_DIR/build_translated_list.pl {} $WIKI_LANG $DIR/scores > $DIR/projects/\$(basename {})"
+    find $EN_NEEDED/projects/ -type f | \
+        $PARALLEL "$PERL $SCRIPT_DIR/build_translated_list.pl {} $WIKI_LANG $DIR/scores > $DIR/projects/\$(basename {})"
 fi
 
 ######################################################################
@@ -337,19 +341,8 @@ fi
 
 echo "Compressing all files..."
 ZIP="7za a -tzip -mx9 -mmt6"
-parallel --progress --link $ZIP ::: \
-         $DIR/pages.zip $DIR/pageviews.zip $DIR/pagelinks.zip $DIR/langlinks.zip $DIR/redirects.zip $DIR/scores.zip $DIR/all.zip ::: \
-         $DIR/pages     $DIR/pageviews     $DIR/pagelinks     $DIR/langlinks     $DIR/redirects     $DIR/scores     $DIR/all
-
-if [ -f $DIR/ratings ] ; then $ZIP $DIR/ratings.zip $DIR/ratings ; fi
-if [ -f $DIR/vital ] ; then $ZIP $DIR/vital.zip $DIR/vital ; fi
-if [ -d $DIR/projects ] ; then cd $DIR ; $ZIP projects.zip projects ; cd .. ; fi
-if [ -d $DIR/tops ] ; then cd $DIR ; $ZIP tops.zip tops ; cd .. ; fi
-if [ -d $DIR/customs ] ; then cd $DIR ; $ZIP customs.zip customs ; cd .. ; fi
-
-rm -rf $DIR/vital $DIR/ratings $DIR/pages $DIR/pageviews \
-   $DIR/pagelinks $DIR/langlinks $DIR/redirects $DIR/all \
-   $DIR/scores
+find $DIR -not -name README -maxdepth 1 -mindepth 1 | \
+    $PARALLEL "$ZIP {}.zip {} && rm -rf {}"
 
 ######################################################################
 # UPLOAD to wp1.kiwix.org                                            #
@@ -357,6 +350,9 @@ rm -rf $DIR/vital $DIR/ratings $DIR/pages $DIR/pageviews \
 
 echo "Upload $DIR to download.kiwix.org"
 scp -o StrictHostKeyChecking=no -r $DIR $(cat $SCRIPT_DIR/remote)
+REMOTE_DIR=$(cat $SCRIPT_DIR/remote | sed s/.*://)$(basename $DIR);
+find $DIR -name "customs.zip" -o -name "tops.zip" -o -name "projects.zip" | \
+    $PARALLEL "ssh -o StrictHostKeyChecking=no \$(cat $SCRIPT_DIR/remote | sed s/:.*//) unzip $REMOTE_DIR/\$(basename {}) -d $REMOTE_DIR"
 
 ######################################################################
 # CLEAN DIRECTORY                                                    #
