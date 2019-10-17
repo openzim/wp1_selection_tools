@@ -354,7 +354,7 @@ echo "Upload $DIR to download.kiwix.org"
 scp -o StrictHostKeyChecking=no -r $DIR $(cat $SCRIPT_DIR/remote)
 REMOTE_DIR=$(cat $SCRIPT_DIR/remote | sed s/.*://)$(basename $DIR);
 find $DIR -name "customs.zip" -o -name "tops.zip" -o -name "projects.zip" | \
-    $PARALLEL "ssh -o StrictHostKeyChecking=no \$(cat $SCRIPT_DIR/remote | sed s/:.*//) unzip -fo $REMOTE_DIR/\$(basename {}) -d $REMOTE_DIR"
+    $PARALLEL "ssh -o StrictHostKeyChecking=no \$(cat $SCRIPT_DIR/remote | sed s/:.*//) unzip -o $REMOTE_DIR/\$(basename {}) -d $REMOTE_DIR"
 
 ######################################################################
 # CLEAN DIRECTORY                                                    #
