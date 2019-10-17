@@ -159,8 +159,7 @@ echo "pageviews: page_title view_count" > $README
 # Pages
 echo "Gathering pages..."
 echo "pages: page_id page_title page_size is_redirect" >> $README
-rm -f $DIR/pages
-touch $DIR/pages
+cat /dev/null > $DIR/pages
 OLD_SIZE=
 NEW_SIZE=0
 UPPER_LIMIT=0;
@@ -179,8 +178,7 @@ done
 # Page links
 echo "Gathering page links..."
 echo "pagelinks: source_page_id target_page_title" >> $README
-rm -f $DIR/pagelinks
-touch $DIR/pagelinks
+cat /dev/null > $DIR/pagelinks
 OLD_SIZE=
 NEW_SIZE=0
 UPPER_LIMIT=0;
@@ -217,8 +215,7 @@ $MYSQL \
 if [ $WIKI == 'enwiki' ]
 then
     echo "Gathering WP1 ratings..."
-    rm -f $DIR/ratings
-    touch $DIR/ratings
+    cat /dev/null > $DIR/ratings
 
     echo "ratings: page_title project quality importance" >> $README
 
