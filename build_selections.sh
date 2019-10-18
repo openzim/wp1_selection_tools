@@ -349,7 +349,7 @@ find $DIR -not -name README -maxdepth 1 -mindepth 1 | \
 
 echo "Upload $DIR to download.kiwix.org"
 scp -o StrictHostKeyChecking=no -r $DIR $(cat $SCRIPT_DIR/remote)
-REMOTE_DIR=$(cat $SCRIPT_DIR/remote | sed s/.*://)$(basename $DIR);
+REMOTE_DIR=$(sed s/.*:// < $SCRIPT_DIR/remote)$(basename $DIR);
 find $DIR -name "customs.zip" -o -name "tops.zip" -o -name "projects.zip" | \
     $PARALLEL "ssh -o StrictHostKeyChecking=no \$(sed s/:.*// < $SCRIPT_DIR/remote) unzip -o $REMOTE_DIR/\$(basename {}) -d $REMOTE_DIR"
 
