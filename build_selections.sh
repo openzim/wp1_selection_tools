@@ -10,7 +10,7 @@ set -o pipefail
 
 # Parse command line
 WIKI_LANG=$1
-WIKI_LANG_SHORT=$(echo $WIKI_LANG | sed 's/\(^[[:alpha:]]{2,3}\).*/\1/') | sed 's/-/_/g'
+WIKI_LANG_SHORT=$(echo $WIKI_LANG | sed 's/\(^[[:alpha:]]{2,3}\).*/\1/' | sed 's/-/_/g')
 WIKI=${WIKI_LANG}wiki
 
 # WIKI DB
@@ -351,7 +351,7 @@ echo "Upload $DIR to download.kiwix.org"
 scp -o StrictHostKeyChecking=no -r $DIR $(cat $SCRIPT_DIR/remote)
 REMOTE_DIR=$(cat $SCRIPT_DIR/remote | sed s/.*://)$(basename $DIR);
 find $DIR -name "customs.zip" -o -name "tops.zip" -o -name "projects.zip" | \
-    $PARALLEL "ssh -o StrictHostKeyChecking=no \$(cat $SCRIPT_DIR/remote | sed s/:.*//) unzip -o $REMOTE_DIR/\$(basename {}) -d $REMOTE_DIR"
+    $PARALLEL "ssh -o StrictHostKeyChecking=no \$(sed s/:.*// < $SCRIPT_DIR/remote) unzip -o $REMOTE_DIR/\$(basename {}) -d $REMOTE_DIR"
 
 ######################################################################
 # CLEAN DIRECTORY                                                    #
