@@ -4,7 +4,18 @@
 set -e
 set -o pipefail
 
-for LANG in $(./build_biggest_wikipedia_list.sh 0 | cut -d " " -f1)
+# Parse command line
+WIKI_LANG_OFFSET=$1
+
+for WIKI_LANG in $(./build_biggest_wikipedia_list.sh 0 | cut -d " " -f1 )
 do
-    ./build_selections.sh $LANG || exit $?
+    if [ x$WIKI_LANG_OFFSET == x$WIKI_LANG ]
+    then
+        unset WIKI_LANG_OFFSET
+    fi
+
+    if [ x$WIKI_LANG_OFFSET == x ]
+    then
+        ./build_selections.sh $WIKI_LANG || exit $?
+    fi
 done
