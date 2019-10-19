@@ -10,12 +10,20 @@ set -o pipefail
 
 # Parse command line
 WIKI_LANG=$1
-WIKI_LANG_SHORT=$(echo $WIKI_LANG | sed 's/\(^[[:alpha:]]{2,3}\).*/\1/' | sed 's/-/_/g')
+if [ $WIKI_LANG == 'be-tarask' ]
+then
+    WIKI_LANG_SHORT='be_x_old'
+else
+    WIKI_LANG_SHORT=$(echo $WIKI_LANG | sed 's/\(^[[:alpha:]]{2,3}\).*/\1/' | sed 's/-/_/g')
+fi
 WIKI=${WIKI_LANG}wiki
 
 # WIKI DB
 DB_HOST=${WIKI_LANG_SHORT}wiki.analytics.db.svc.eqiad.wmflabs
-DB=$(echo ${WIKI} | sed 's/-/_/g')_p
+DB=${WIKI_LANG_SHORT}wiki_p
+MYSQL='mysql --defaults-file=~/replica.my.cnf --ssl-mode=DISABLED --compress --execute'
+$MYSQL "SELECT 42 FROM page LIMIT 1" -N -h ${DB_HOST} ${DB} > /dev/null || \
+    ( echo "Unable to connect to DB host '${DB_HOST}' and DB '${DB}'" && exit 1 )
 
 # WP1 DB
 WP1_DB_HOST=tools.db.svc.eqiad.wmflabs
@@ -36,9 +44,6 @@ README=$DIR/README
 if [ ! -d $DATA ]; then mkdir $DATA &> /dev/null; fi
 if [ ! -d $TMP  ]; then mkdir $TMP &> /dev/null; fi
 if [ ! -d $DIR  ]; then mkdir $DIR &> /dev/null; fi
-
-# MySQL command line
-MYSQL='mysql --defaults-file=~/replica.my.cnf --ssl-mode=DISABLED --compress --execute'
 
 # To execute things in parallel
 PARALLEL='parallel -j8'
