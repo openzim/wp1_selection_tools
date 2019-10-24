@@ -20,8 +20,7 @@ do
         while [ $RUN -lt 5 ]
         do
             echo "Run $RUN for $WIKI_LANG"
-            ./build_selections.sh $WIKI_LANG
-            if [ $? -eq 0 ]
+            if ./build_selections.sh $WIKI_LANG
             then
                 RUN=5
             else
