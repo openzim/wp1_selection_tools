@@ -16,6 +16,18 @@ do
 
     if [ x$WIKI_LANG_OFFSET == x ]
     then
-        ./build_selections.sh $WIKI_LANG || exit $?
-    fi
+        RUN=1
+        while [ $RUN -lt 5 ]
+        do
+            echo "Run $RUN for $WIKI_LANG"
+            ./build_selections.sh $WIKI_LANG
+            if [ $? -eq 0 ]
+            then
+                RUN=5
+            else
+                ((RUN=RUN+1))
+            fi
+            sleep 1
+        done
+     fi
 done
