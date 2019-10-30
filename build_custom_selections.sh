@@ -72,7 +72,7 @@ then
     echo "Book:Cardiology" >> "$CUSTOM_DIR/medicine.tsv"
     echo "Book:Children's health" >> "$CUSTOM_DIR/medicine.tsv"
     echo "Book:Dermatology" >> "$CUSTOM_DIR/medicine.tsv"
-    echo "Book:Ears_nose_throat" >> "$CUSTOM_DIR/medicine/tsv"
+    echo "Book:Ears_nose_throat" >> "$CUSTOM_DIR/medicine.tsv"
     echo "Book:Endocrinology" >> "$CUSTOM_DIR/medicine.tsv"
     echo "Book:Eye_diseases" >>  "$CUSTOM_DIR/medicine.tsv"
     echo "Book:Gastroenterology" >> "$CUSTOM_DIR/medicine.tsv"
