@@ -16,7 +16,7 @@ if (!-d $directory) {
 }
 
 # Open pages
-my $pagesFile = "$directory/pages";
+my $pagesFile = "$directory/pages.tsv";
 
 print STDERR "Getting higher page id from $pagesFile...\n";
 open(FILE, '<', $pagesFile) or die("Unable to open file $pagesFile\n");
@@ -44,7 +44,7 @@ while(<FILE>) {
 close(FILE);
 
 # Open pagelinks
-my $pagelinksFile = "$directory/pagelinks";
+my $pagelinksFile = "$directory/pagelinks.tsv";
 print STDERR "Reading $pagelinksFile...\n";
 open(FILE, '<', $pagelinksFile) or die("Unable to open file $pagelinksFile\n");
 while(<FILE>) {
@@ -56,7 +56,7 @@ while(<FILE>) {
 close(FILE);
 
 # Open langlinks
-my $langlinksFile = "$directory/langlinks";
+my $langlinksFile = "$directory/langlinks.tsv";
 print STDERR "Reading $langlinksFile...\n";
 open(FILE, '<', $langlinksFile) or die("Unable to open file $langlinksFile\n");
 while(<FILE>) {
@@ -69,7 +69,7 @@ while(<FILE>) {
 close(FILE);
 
 # Open pageviews
-my $pageviewsFile = "$directory/pageviews";
+my $pageviewsFile = "$directory/pageviews.tsv";
 print STDERR "Reading $pageviewsFile...\n";
 open(FILE, '<', $pageviewsFile) or die("Unable to open file $pageviewsFile\n");
 while(<FILE>) {
@@ -81,7 +81,7 @@ while(<FILE>) {
 close(FILE);
 
 # Open redirects
-my $redirectsFile = "$directory/redirects";
+my $redirectsFile = "$directory/redirects.tsv";
 print STDERR "Reading $redirectsFile...\n";
 open(FILE, '<', $redirectsFile) or die("Unable to open file $redirectsFile\n");
 while(<FILE>) {
@@ -90,33 +90,33 @@ while(<FILE>) {
     my ($sourcePageId, $targetPageTitle) = split("\t", $line);
     my $sourcePageTitle = $id2title[$sourcePageId];
     if ($sourcePageTitle && exists($counts{$sourcePageTitle})) {
-	
-	if (exists($counts{$targetPageTitle})) {
-	    if ($counts{$sourcePageTitle}{"l"}) {
-		if ($counts{$targetPageTitle}{"l"}) {
-		    $counts{$targetPageTitle}{"l"} += $counts{$sourcePageTitle}{"l"};
-		} else {
-		    $counts{$targetPageTitle}{"l"} = $counts{$sourcePageTitle}{"l"};
-		}
-	    }
-	    if ($counts{$sourcePageTitle}{"ll"}) {
-		if ($counts{$targetPageTitle}{"ll"}) {
-		    $counts{$targetPageTitle}{"ll"} += $counts{$sourcePageTitle}{"ll"};
-		} else {
-		    $counts{$targetPageTitle}{"ll"} = $counts{$sourcePageTitle}{"ll"};
-		}
-	    }
-	    if ($counts{$sourcePageTitle}{"v"}) {
-		if ($counts{$targetPageTitle}{"v"}) {
-		    $counts{$targetPageTitle}{"v"} += $counts{$sourcePageTitle}{"v"};
-		} else {
-		    $counts{$targetPageTitle}{"v"} = $counts{$sourcePageTitle}{"v"};
-		}
-	    }
-	}
 
-	delete($counts{$sourcePageTitle});
-	$id2title[$sourcePageId] = undef;
+        if (exists($counts{$targetPageTitle})) {
+            if ($counts{$sourcePageTitle}{"l"}) {
+                if ($counts{$targetPageTitle}{"l"}) {
+                    $counts{$targetPageTitle}{"l"} += $counts{$sourcePageTitle}{"l"};
+                } else {
+                    $counts{$targetPageTitle}{"l"} = $counts{$sourcePageTitle}{"l"};
+                }
+            }
+            if ($counts{$sourcePageTitle}{"ll"}) {
+                if ($counts{$targetPageTitle}{"ll"}) {
+                    $counts{$targetPageTitle}{"ll"} += $counts{$sourcePageTitle}{"ll"};
+                } else {
+                    $counts{$targetPageTitle}{"ll"} = $counts{$sourcePageTitle}{"ll"};
+                }
+            }
+            if ($counts{$sourcePageTitle}{"v"}) {
+                if ($counts{$targetPageTitle}{"v"}) {
+                    $counts{$targetPageTitle}{"v"} += $counts{$sourcePageTitle}{"v"};
+                } else {
+                    $counts{$targetPageTitle}{"v"} = $counts{$sourcePageTitle}{"v"};
+                }
+            }
+        }
+
+        delete($counts{$sourcePageTitle});
+        $id2title[$sourcePageId] = undef;
     }
 }
 close(FILE);
@@ -135,7 +135,7 @@ sub revert_hash {
     my %result;
 
     while (my ($key, $value) = each %$hash) {
-	$result{$value}=$key;
+        $result{$value}=$key;
     }
 
     \%result;
@@ -146,10 +146,10 @@ sub shorten_ratings {
     my $result = "";
 
     while ($ratings =~ m/(.+?)=([^:]+):([^\t]+)(\t|)/g) {
-	$result .= ($result ? "\t" : "") .
-	    ($projects{$1} //= scalar(keys(%projects))) . "=" .
-	    ($classes{$2} //= scalar(keys(%classes))) . ":" .
-	    ($evals{$3} //= scalar(keys(%evals)));
+        $result .= ($result ? "\t" : "") .
+            ($projects{$1} //= scalar(keys(%projects))) . "=" .
+            ($classes{$2} //= scalar(keys(%classes))) . ":" .
+            ($evals{$3} //= scalar(keys(%evals)));
     }
 
     $result
@@ -160,29 +160,29 @@ sub expand_ratings {
     my $result = "";
 
     while ($ratings =~ m/(.+?)=([^:]+):([^\t]+)(\t|)/g) {
-	$result .= ($result ? "\t" : "") .
-	    $projects{$1} . "=" .
-	    $classes{$2} . ":" .
-	    $evals{$3};
+        $result .= ($result ? "\t" : "") .
+            $projects{$1} . "=" .
+            $classes{$2} . ":" .
+            $evals{$3};
     }
 
     $result
 }
 
-my $ratingsFile = "$directory/ratings";
+my $ratingsFile = "$directory/ratings.tsv";
 if (-f $ratingsFile) {
     print STDERR "Reading $ratingsFile...\n";
     open(FILE, '<', $ratingsFile) or die("Unable to open file $ratingsFile\n");
     while(<FILE>) {
-	my $line = $_;
-	chomp($line);
-	my ($pageTitle, $project, $quality, $importance) = split("\t", $line);
-	my $ratingEntry = shorten_ratings($project."=".$quality.":".$importance);
-	if (exists($counts{$pageTitle}{"r"})) {
-	    $counts{$pageTitle}{"r"} .= ($counts{$pageTitle}{"r"} ? "\t" : "").$ratingEntry;
-	} else {
-	    $counts{$pageTitle}{"r"} = $ratingEntry;
-	}
+        my $line = $_;
+        chomp($line);
+        my ($pageTitle, $project, $quality, $importance) = split("\t", $line);
+        my $ratingEntry = shorten_ratings($project."=".$quality.":".$importance);
+        if (exists($counts{$pageTitle}{"r"})) {
+            $counts{$pageTitle}{"r"} .= ($counts{$pageTitle}{"r"} ? "\t" : "").$ratingEntry;
+        } else {
+            $counts{$pageTitle}{"r"} = $ratingEntry;
+        }
     }
     close(FILE);
 }
@@ -200,14 +200,14 @@ while(<FILE>) {
     my ($pageId, $pageTitle, $pageSize, $isRedirect) = split("\t", $line);
     next if ($isRedirect);
     print
-	$pageTitle."\t".
-	$pageId."\t".
-	($counts{$pageTitle}{"s"} || "0")."\t".
-	($counts{$pageTitle}{"l"} || "0")."\t".
-	($counts{$pageTitle}{"ll"} || "0")."\t".
-	($counts{$pageTitle}{"v"} || "0").
-	(exists($counts{$pageTitle}{"r"}) ? "\t".expand_ratings($counts{$pageTitle}{"r"}) : "").
-	"\n";
+        $pageTitle."\t".
+        $pageId."\t".
+        ($counts{$pageTitle}{"s"} || "0")."\t".
+        ($counts{$pageTitle}{"l"} || "0")."\t".
+        ($counts{$pageTitle}{"ll"} || "0")."\t".
+        ($counts{$pageTitle}{"v"} || "0").
+        (exists($counts{$pageTitle}{"r"}) ? "\t".expand_ratings($counts{$pageTitle}{"r"}) : "").
+        "\n";
 }
 close(FILE);
 

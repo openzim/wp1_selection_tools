@@ -9,8 +9,8 @@ my %projectsFds;
 
 # Check if directory and files exist
 my $dir = $ARGV[0] || "";
-my $scoresFile = "$dir/scores";
-my $allFile = "$dir/all";
+my $scoresFile = "$dir/scores.tsv";
+my $allFile = "$dir/all.tsv";
 
 if (!-d $dir) {
     print STDERR "Directory '$dir' does not exist, is not a directory or is not readable.\n";
@@ -84,7 +84,7 @@ sub getProjectFd {
     return $projectsFds{$project} if exists($projectsFds{$project});
 
     my $project_escaped = $project =~ s/\//_/gr;
-    my $projectFile = "$projectsDir/$project_escaped.tmp";
+    my $projectFile = "$projectsDir/$project_escaped.tsv.tmp";
     print STDERR "Opening project file '$projectFile'...\n";
     open($projectsFds{$project}, '>', $projectFile) or die("Unable to open file '$projectFile'\n");
     $projectsFds{$project}

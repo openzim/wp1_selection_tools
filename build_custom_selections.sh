@@ -40,7 +40,7 @@ if [ $WIKI_LANG != "en" ]
 then
     for FILE in $(find $DATA/en.needed/customs/ -type f)
     do
-        $PERL $TRANSLATE_LIST_SCRIPT_PATH "$FILE" $WIKI_LANG "$CUSTOM_DIR/../scores" > $CUSTOM_DIR/$(basename $FILE)
+        $PERL $TRANSLATE_LIST_SCRIPT_PATH "$FILE" $WIKI_LANG "$CUSTOM_DIR/../scores.tsv" > $CUSTOM_DIR/$(basename $FILE)
     done
 fi
 
@@ -56,75 +56,75 @@ then
 
     # Wikivoyage Europe
     if [ ! -d "$CUSTOM_DIR/wikivoyage" ]; then mkdir "$CUSTOM_DIR/wikivoyage" &> /dev/null; fi
-    $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikivoyage.org --path=w --exploration=8 --namespace=0 --category="Europe" | sort -u > "$CUSTOM_DIR/wikivoyage/europe"
+    $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikivoyage.org --path=w --exploration=8 --namespace=0 --category="Europe" | sort -u > "$CUSTOM_DIR/wikivoyage/europe.tsv"
 
     # WikiMed
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Women's_health_articles" \
           --category="WikiProject_Microbiology_articles" --category="WikiProject_Physiology_articles" --category="WikiProject_Medicine_articles" \
           --category="WikiProject_Dentistry_articles" --category="WikiProject_Anatomy_articles" --category="WikiProject_Pharmacology_articles" \
-          --category="WikiProject_Sanitation_articles" | sed 's/Talk://' | sort -u > "$TMP/medicine_unfiltered"
+          --category="WikiProject_Sanitation_articles" | sed 's/Talk://' | sort -u > "$TMP/medicine_unfiltered.tsv"
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Hospitals_articles" \
           --category="WikiProject_History_of_Science_articles" --category="WikiProject_Academic_Journal_articles" \
           --category="WikiProject_Visual_arts_articles" --category="WikiProject_Biography_articles" \
-          --category="WikiProject_Companies_articles" | sed 's/Talk://' | sort -u > "$TMP/medicine_filter"
-    grep -Fxv -f "$TMP/medicine_filter" "$TMP/medicine_unfiltered" | sort -u > "$CUSTOM_DIR/medicine"
-    echo "Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Cardiology" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Children's health" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Dermatology" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Ears_nose_throat" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Endocrinology" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Eye_diseases" >>  "$CUSTOM_DIR/medicine"
-    echo "Book:Gastroenterology" >> "$CUSTOM_DIR/medicine"
-    echo "Book:General_surgery" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Infectious_disease" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Medications" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Mental health" >>  "$CUSTOM_DIR/medicine"
-    echo "Book:Neurology" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Ortho" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Orthopedics" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Cancer" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Ophthalmology" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Pediatrics" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Psychiatry" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Rheumatology" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Skin diseases" >> "$CUSTOM_DIR/medicine"
-    echo "Book:Women's_health" >> "$CUSTOM_DIR/medicine"
+          --category="WikiProject_Companies_articles" | sed 's/Talk://' | sort -u > "$TMP/medicine_filter.tsv"
+    grep -Fxv -f "$TMP/medicine_filter.tsv" "$TMP/medicine_unfiltered.tsv" | sort -u > "$CUSTOM_DIR/medicine.tsv"
+    echo "Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Cardiology" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Children's health" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Dermatology" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Ears_nose_throat" >> "$CUSTOM_DIR/medicine/tsv"
+    echo "Book:Endocrinology" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Eye_diseases" >>  "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Gastroenterology" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:General_surgery" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Infectious_disease" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Medications" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Mental health" >>  "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Neurology" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Ortho" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Orthopedics" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Cancer" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Ophthalmology" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Pediatrics" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Psychiatry" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Rheumatology" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Skin diseases" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Women's_health" >> "$CUSTOM_DIR/medicine.tsv"
     $LIST_LANG_LINKS_PATH --host=en.wikipedia.org --path=w --readFromStdin --language=ja --language=as --language=bn --language=gu --language=hi \
                           --language=kn --language=ml --language=de --language=bpy --language=mr --language=lo --language=or --language=pa \
                           --language=ta --language=te --language=ur --language=fa --language=fr --language=zh --language=pt --language=ar \
-                          --language=es --language=it < "$CUSTOM_DIR/medicine" > "$DATA/en.needed/medicine.langlinks"
+                          --language=es --language=it < "$CUSTOM_DIR/medicine.tsv" > "$DATA/en.needed/medicine.langlinks.tsv"
 
     # Ray Charles
-    $PERL $LIST_CATEGORY_SCRIPT_PATH --path=w --host=en.wikipedia.org --category="Ray_Charles" --namespace=0 --explorationDepth=3 | sort -u > "$CUSTOM_DIR/ray_charles"
+    $PERL $LIST_CATEGORY_SCRIPT_PATH --path=w --host=en.wikipedia.org --category="Ray_Charles" --namespace=0 --explorationDepth=3 | sort -u > "$CUSTOM_DIR/ray_charles.tsv"
 
     # Movies
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="Actors_and_filmmakers_work_group_articles" \
-          --category="WikiProject_Film_articles" | sed 's/Talk://' | sort -u > "$CUSTOM_DIR/movies"
+          --category="WikiProject_Film_articles" | sed 's/Talk://' | sort -u > "$CUSTOM_DIR/movies.tsv"
 
     # Download list of articles to excludes from selections
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Biography_articles" \
-          --category="WikiProject_Companies_articles" | sed 's/Talk://' | sort -u > "$TMP/filter_out"
+          --category="WikiProject_Companies_articles" | sed 's/Talk://' | sort -u > "$TMP/filter_out.tsv"
 
     # Physics
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Physics_articles" | \
-        sed 's/Talk://' | sort -u > "$TMP/physics_unfiltered"
-    grep -Fxv -f "$TMP/filter_out" "$TMP/physics_unfiltered" | sort -u > "$CUSTOM_DIR/physics"
+        sed 's/Talk://' | sort -u > "$TMP/physics_unfiltered.tsv"
+    grep -Fxv -f "$TMP/filter_out.tsv" "$TMP/physics_unfiltered.tsv" | sort -u > "$CUSTOM_DIR/physics.tsv"
 
     # Molecular & Cell Biology
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Molecular_and_Cellular_Biology_articles" | \
-        sed 's/Talk://' | sort -u > "$TMP/molcell_unfiltered"
-    grep -Fxv -f "$TMP/filter_out" "$TMP/molcell_unfiltered" | sort -u > "$CUSTOM_DIR/molcell"
+        sed 's/Talk://' | sort -u > "$TMP/molcell_unfiltered.tsv"
+    grep -Fxv -f "$TMP/filter_out.tsv" "$TMP/molcell_unfiltered.tsv" | sort -u > "$CUSTOM_DIR/molcell.tsv"
 
     # Maths
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Mathematics_articles" | \
-        sed 's/Talk://' | sort -u > "$TMP/maths_unfiltered"
-    grep -Fxv -f "$TMP/filter_out" "$TMP/maths_unfiltered" | sort -u > "$CUSTOM_DIR/maths"
+        sed 's/Talk://' | sort -u > "$TMP/maths_unfiltered.tsv"
+    grep -Fxv -f "$TMP/filter_out.tsv" "$TMP/maths_unfiltered.tsv" | sort -u > "$CUSTOM_DIR/maths.tsv"
 
     # Chemistry
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Chemistry_articles" | \
-        sed 's/Talk://' | sort -u > "$TMP/chemistry_unfiltered"
-    grep -Fxv -f "$TMP/filter_out" "$TMP/chemistry_unfiltered" | sort -u > "$CUSTOM_DIR/chemistry"
+        sed 's/Talk://' | sort -u > "$TMP/chemistry_unfiltered.tsv"
+    grep -Fxv -f "$TMP/filter_out.tsv" "$TMP/chemistry_unfiltered.tsv" | sort -u > "$CUSTOM_DIR/chemistry.tsv"
 
 # French
 elif [ "$WIKI_LANG" == "fr" ]
@@ -132,14 +132,14 @@ then
 
     # Tunisie
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=fr.wikipedia.org --path=w --exploration=5 --namespace=1 --category="Évaluation_des_articles_du_projet_Tunisie" | \
-        sed 's/Discussion://' | sort -u > "$CUSTOM_DIR/tunisie"
-    echo "Portail:Tunisie/Index thématique" >> "$CUSTOM_DIR/tunisie"
+        sed 's/Discussion://' | sort -u > "$CUSTOM_DIR/tunisie.tsv"
+    echo "Portail:Tunisie/Index thématique" >> "$CUSTOM_DIR/tunisie.tsv"
 
     # Medicine
-    $PERL $TRANSLATE_LIST_SCRIPT_PATH $DATA/en.needed/customs/medicine $WIKI_LANG "$CUSTOM_DIR/../scores" > "$TMP/medicine"
+    $PERL $TRANSLATE_LIST_SCRIPT_PATH $DATA/en.needed/customs/medicine $WIKI_LANG "$CUSTOM_DIR/../scores" > "$TMP/medicine.tsv"
     $PERL $LIST_CATEGORY_SCRIPT_PATH --host=fr.wikipedia.org --category="Évaluation_des_articles_du_projet_Soins_infirmiers_et_profession_infirmière" \
           --category="Évaluation_des_articles_du_projet_Premiers_secours_et_secourisme" --category="Évaluation_des_articles_du_projet_Médecine" \
           --category="Évaluation_des_articles_du_projet_Anatomie" --category="Évaluation_des_articles_du_projet_Pharmacie" --path=w --exploration=5 --namespace=1 | \
-        sed 's/Discussion://' | sort -u > "$TMP/medicine_fr"
-    cat "$TMP/medicine_fr" "$TMP/medicine" | sort -u > "$CUSTOM_DIR/medicine"
+        sed 's/Discussion://' | sort -u > "$TMP/medicine_fr.tsv"
+    cat "$TMP/medicine_fr.tsv" "$TMP/medicine.tsv" | sort -u > "$CUSTOM_DIR/medicine.tsv"
 fi
