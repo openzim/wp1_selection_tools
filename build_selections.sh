@@ -280,8 +280,9 @@ $PERL $SCRIPT_DIR/build_scores.pl $ALL | sort -t$'\t' -k2 -n -r > $SCORES
 # COMPUTE TOP SELECTIONS                                             #
 ######################################################################
 
-echo "tops/*tsv: page_title (one file per TOP selection)" >> $README
 echo "Creating TOP selections..."
+echo "tops/*tsv: page_title (one file per TOP selection)" >> $README
+
 MAX=$(wc -l $SCORES | cut -d ' ' -f1)
 LAST_TOP=0
 if [ ! -d "$DIR/tops" ]
@@ -306,7 +307,7 @@ done
 ######################################################################
 
 echo "Creating wikiprojet selections..."
-echo "project/*tsv: page_title (one file per project)" >> $README
+echo "projects/*tsv: page_title (one file per project)" >> $README
 ulimit -n 3000
 
 EN_NEEDED=$DATA/en.needed
@@ -333,6 +334,9 @@ fi
 ######################################################################
 # CUSTOM selections                                                  #
 ######################################################################
+
+echo "Creating custom selections..."
+echo "customs/*tsv: page_title (one file per custom selection)" >> $README
 
 if [ ! -d "$DIR/customs" ]
 then
