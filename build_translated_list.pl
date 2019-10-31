@@ -14,7 +14,7 @@ my %results;
 my $titleFile = $ARGV[0] || "";
 my $lang      = $ARGV[1] || "";
 my $scoreFile = $ARGV[2] || "";
-my $langLinks = "${FindBin::Bin}data/tmp/$lang.langlinks";
+my $langLinks = "${FindBin::Bin}data/tmp/$lang.langlinks.tsv";
 
 if (!$lang) {
     print STDERR "Language is not set.\n";
