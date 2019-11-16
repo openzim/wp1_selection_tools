@@ -30,3 +30,5 @@ do
         done
      fi
 done
+
+echo "All selections have been built successfuly"
