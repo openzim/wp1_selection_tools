@@ -35,7 +35,7 @@ then
     exit 1
 fi
 
-# Translate custom selections in English
+# Translate custom selections from English
 if [ $WIKI_LANG != "en" ]
 then
     for FILE in $(find $DATA/en.needed/customs/ -type f)
@@ -142,4 +142,24 @@ then
           --category="Évaluation_des_articles_du_projet_Anatomie" --category="Évaluation_des_articles_du_projet_Pharmacie" --path=w --exploration=5 --namespace=1 | \
         sed 's/Discussion://' | sort -u > "$TMP/medicine_fr.tsv"
     cat "$TMP/medicine_fr.tsv" "$TMP/medicine.tsv" | sort -u > "$CUSTOM_DIR/medicine.tsv"
+fi
+
+# Endless
+if [ -f "customs/endless/$WIKI_LANG/base_selection" ]
+then
+    echo "Building Endless selection..."
+    BASELIST_PATH="$CUSTOM_DIR/../"`cat customs/endless/$WIKI_LANG/base_selection`
+    if [ -f "$BASELIST_PATH" ]
+    then
+        WHITELIST_PATH="customs/endless/$WIKI_LANG/whitelist.tsv"
+        BLACKLIST_PATH="customs/endless/$WIKI_LANG/blacklist.tsv"
+
+        if [ -f "BLACKLIST_PATH" ]
+        then
+            cat "$BASELIST_PATH" "$WHITELIST_PATH" | sort -u > "$TMP/endless.tsv" 2> /dev/null
+            $PERL $COMPARE_LISTS_SCRIPT_PATH --file1="$TMP/endless.tsv" --file2="$LACKLIST_PATH" --mode=only1 > "$CUSTOM_DIR/endless.tsv"
+        else
+            cat "$BASELIST_PATH" "$WHITELIST_PATH" | sort -u > "$CUSTOM_DIR/endless.tsv" 2> /dev/null
+        fi
+    fi
 fi
