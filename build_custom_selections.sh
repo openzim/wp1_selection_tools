@@ -156,10 +156,10 @@ then
 
         if [ -f "BLACKLIST_PATH" ]
         then
-            cat "$BASELIST_PATH" "$WHITELIST_PATH" | awk '!seen[$0]++' > "$TMP/endless.tsv" 2> /dev/null
+            cat "$BASELIST_PATH" "$WHITELIST_PATH" 2> /dev/null | awk '!seen[$0]++' > "$TMP/endless.tsv"
             $PERL $COMPARE_LISTS_SCRIPT_PATH --file1="$TMP/endless.tsv" --file2="$LACKLIST_PATH" --mode=only1 > "$CUSTOM_DIR/endless.tsv"
         else
-            cat "$BASELIST_PATH" "$WHITELIST_PATH" | awk '!seen[$0]++' > "$CUSTOM_DIR/endless.tsv" 2> /dev/null
+            cat "$BASELIST_PATH" "$WHITELIST_PATH" 2> /dev/null | awk '!seen[$0]++' > "$CUSTOM_DIR/endless.tsv"
         fi
     fi
 fi
