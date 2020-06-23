@@ -1,9 +1,10 @@
-FROM ubuntu:bionic
+FROM ubuntu:focal
 
 RUN apt-get update && \
+    export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y --no-install-recommends \
     cron ca-certificates curl xml2 wget mysql-client \
-    perl-modules-5.26 libxml-simple-perl \
+    libperl5.30 libxml-simple-perl \
     libgetargs-long-perl p7zip-full lzma \
     openssh-client liblist-compare-perl libwww-perl \
     parallel && \
