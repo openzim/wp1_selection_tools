@@ -5,7 +5,7 @@ selections. It has been created for the [Wikipedia
 complementary of the [WP1 engine](https://github.com/openzim/wp1).
 
 The results are made available at
-[https://download.kiwix.org/wp1](https://download.openzim.org/wp1).
+[https://download.openzim.org/wp1](https://download.openzim.org/wp1).
 
 [![Docker Build Status](https://img.shields.io/docker/build/openzim/wp1_selection_tools)](https://hub.docker.com/r/openzim/wp1_selection_tools)
 [![CodeFactor](https://www.codefactor.io/repository/github/openzim/wp1_selection_tools/badge)](https://www.codefactor.io/repository/github/openzim/wp1_selection_tools)
