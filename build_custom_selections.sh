@@ -122,8 +122,8 @@ then
     grep -Fxv -f "$TMP/filter_out.tsv" "$TMP/maths_unfiltered.tsv" | sort -u > "$CUSTOM_DIR/maths.tsv"
 
     # Chemistry
-    $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Chemistry_articles" | \
-        sed 's/Talk://' | sort -u > "$TMP/chemistry_unfiltered.tsv"
+    $PERL $LIST_CATEGORY_SCRIPT_PATH --host=en.wikipedia.org --path=w --exploration=5 --namespace=1 --category="WikiProject_Chemistry_articles" \
+      --category="WikiProject_Elements_articles" | sed 's/Talk://' | sort -u > "$TMP/chemistry_unfiltered.tsv"
     grep -Fxv -f "$TMP/filter_out.tsv" "$TMP/chemistry_unfiltered.tsv" | sort -u > "$CUSTOM_DIR/chemistry.tsv"
 
 # French
