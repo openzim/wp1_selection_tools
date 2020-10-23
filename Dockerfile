@@ -26,5 +26,5 @@ COPY customs/ customs/
 
 CMD { \
   echo "#!/bin/sh" ; \
-  echo "/build_all_selections.sh" ; \
+  echo "/usr/bin/flock -w 0 /dev/shm/cron.lock /build_all_selections.sh" ; \
 } > /etc/cron.monthly/wp1_selection_tools && chmod a+x /etc/cron.monthly/wp1_selection_tools && cron -f
