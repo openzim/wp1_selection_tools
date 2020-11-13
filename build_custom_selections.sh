@@ -79,7 +79,7 @@ then
     echo "Book:General_surgery" >> "$CUSTOM_DIR/medicine.tsv"
     echo "Book:Infectious_disease" >> "$CUSTOM_DIR/medicine.tsv"
     echo "Book:Medications" >> "$CUSTOM_DIR/medicine.tsv"
-    echo "Book:Mental health" >>  "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Mental_health" >>  "$CUSTOM_DIR/medicine.tsv"
     echo "Book:Neurology" >> "$CUSTOM_DIR/medicine.tsv"
     echo "Book:Ortho" >> "$CUSTOM_DIR/medicine.tsv"
     echo "Book:Orthopedics" >> "$CUSTOM_DIR/medicine.tsv"
@@ -88,7 +88,7 @@ then
     echo "Book:Pediatrics" >> "$CUSTOM_DIR/medicine.tsv"
     echo "Book:Psychiatry" >> "$CUSTOM_DIR/medicine.tsv"
     echo "Book:Rheumatology" >> "$CUSTOM_DIR/medicine.tsv"
-    echo "Book:Skin diseases" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Book:Skin_diseases" >> "$CUSTOM_DIR/medicine.tsv"
     echo "Book:Women's_health" >> "$CUSTOM_DIR/medicine.tsv"
     $LIST_LANG_LINKS_PATH --host=en.wikipedia.org --path=w --readFromStdin --language=ja --language=as --language=bn --language=gu --language=hi \
                           --language=kn --language=ml --language=de --language=bpy --language=mr --language=lo --language=or --language=pa \
