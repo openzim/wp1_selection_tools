@@ -20,7 +20,7 @@ WIKI=${WIKI_LANG}wiki
 
 # Wikipedia and WP1 databases
 WP1_DB_HOST=tools.db.svc.eqiad.wmflabs
-WP1_DB=s51114_enwp10
+WP1_DB=s51114__enwp10
 DB_HOST=${WIKI_LANG_SHORT}wiki.analytics.db.svc.eqiad.wmflabs
 DB=${WIKI_LANG_SHORT}wiki_p
 MYSQL='mysql --defaults-file=~/replica.my.cnf --ssl-mode=DISABLED --compress --execute'
