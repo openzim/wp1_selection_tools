@@ -17,9 +17,9 @@ jobs:
         uses: openzim/docker-publish-action@v1
         with:
           image-path: openzim/wp1_selection_tools
-          on-master: dev
+          on-master: latest
           tag-pattern: /^v([0-9.]+)$/
-          latest-on-tag: true
+          latest-on-tag: false
           restrict-to: openzim/wp1_selection_tools
           hub-username: ${{ secrets.DOCKERHUB_USERNAME }}
           hub-password: ${{ secrets.DOCKERHUB_PASSWORD }}
