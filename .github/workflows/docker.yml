@@ -14,12 +14,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build and push
-        uses: openzim/docker-publish-action@v1
+        uses: openzim/docker-publish-action@v7
         with:
-          image-path: openzim/wp1_selection_tools
+          image-name: openzim/wp1_selection_tools
+          registries: ghcr.io
           on-master: latest
-          tag-pattern: /^v([0-9.]+)$/
-          latest-on-tag: false
           restrict-to: openzim/wp1_selection_tools
-          ghcr-username: ${{ secrets.GHCR_USERNAME }}
-          ghcr-token: ${{ secrets.GHCR_TOKEN }}
+          credentials: |
+            GHCRIO_USERNAME: ${{ secrets.GHCR_USERNAME }}
+            GHCRIO_TOKEN: ${{ secrets.GHCR_TOKEN }}
