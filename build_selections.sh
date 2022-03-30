@@ -362,11 +362,17 @@ find $DIR -not -name README -maxdepth 1 -mindepth 1 | \
 # UPLOAD to wp1.kiwix.org                                            #
 ######################################################################
 
-echo "Upload $DIR to download.kiwix.org"
-scp -o StrictHostKeyChecking=no -r $DIR $(cat $SCRIPT_DIR/remote)
-REMOTE_DIR=$(sed s/.*:// < $SCRIPT_DIR/remote)$(basename $DIR);
+remote=$(cat $SCRIPT_DIR/remote)
+if echo $remote | grep "::" > /dev/null ; then
+    port="22"
+else
+    port=$(echo $remote | cut -d ":" -f 2)
+fi
+echo "Upload $DIR to $remote on port $port"
 find $DIR -name "customs.zip" -o -name "tops.zip" -o -name "projects.zip" | \
-    $PARALLEL "ssh -o StrictHostKeyChecking=no \$(sed s/:.*// < $SCRIPT_DIR/remote) unzip -o $REMOTE_DIR/\$(basename {}) -d $REMOTE_DIR"
+    $PARALLEL "unzip -o -d $DIR {}"
+scp -P $port -o StrictHostKeyChecking=no -r $DIR $host
+
 
 ######################################################################
 # CLEAN DIRECTORY                                                    #
