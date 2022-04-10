@@ -7,7 +7,7 @@ RUN apt-get update && \
     libperl5.30 libxml-simple-perl \
     libgetargs-long-perl p7zip-full lzma \
     openssh-client liblist-compare-perl libwww-perl \
-    parallel && \
+    parallel unzip && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
