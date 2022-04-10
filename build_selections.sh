@@ -384,5 +384,7 @@ rm $NAMESPACES
 rm $PAGEVIEW_FILES
 rm $NEW_PAGEVIEW_FILES
 rm -f $WIKI_LANGLINKS
+find ${TMP}/* -type d -mtime +60 -exec rm -rf {} \;
+find ${TMP}/* -type f -mtime +60 -exec rm {} \;
 
 echo "Process finished for $WIKI"
