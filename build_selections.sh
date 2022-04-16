@@ -368,10 +368,12 @@ if echo $remote | grep "::" > /dev/null ; then
 else
     port=$(echo $remote | cut -d ":" -f 2)
 fi
+host=$(echo $remote | cut -d ":" -f 1)
+rpath=$(echo $remote | cut -d ":" -f 3)
 echo "Upload $DIR to $remote on port $port"
 find $DIR -name "customs.zip" -o -name "tops.zip" -o -name "projects.zip" | \
     $PARALLEL "unzip -o -d $DIR {}"
-scp -P $port -o StrictHostKeyChecking=no -r $DIR $host
+scp -P $port -o StrictHostKeyChecking=no -r $DIR $host:$rpath
 
 
 ######################################################################
