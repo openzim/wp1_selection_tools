@@ -7,7 +7,6 @@ complementary of the [WP1 engine](https://github.com/openzim/wp1).
 The results are made available at
 [https://download.openzim.org/wp1](https://download.openzim.org/wp1).
 
-[![Docker Image](https://img.shields.io/docker/v/openzim/wp1_selection_tools?arch=amd64&label=docker&sort=semver)](https://hub.docker.com/r/openzim/wp1_selection_tools)
 [![CodeFactor](https://www.codefactor.io/repository/github/openzim/wp1_selection_tools/badge)](https://www.codefactor.io/repository/github/openzim/wp1_selection_tools)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
@@ -96,7 +95,7 @@ docker run -d --name wp1_selection_tools
   -v /srv/wp1_selection_tools/data:/data \
   -v /srv/wp1_selection_tools/.ssh/:/root/.ssh \
   -v /srv/wp1_selection_tools/replica.my.cnf:/root/replica.my.cnf \
-  openzim/wp1_selection_tools
+  ghcr.io/openzim/wp1_selection_tools
 ```
 
 License
