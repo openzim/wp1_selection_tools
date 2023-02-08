@@ -3,18 +3,18 @@ name: Docker
 on:
   push:
     branches:
-      - master
-    tags:
-      - v*
+      - main
 
 jobs:
   build-and-push:
     name: Deploy Docker Image
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - name: Retrieve source code
+        uses: actions/checkout@v3
+
       - name: Build and push
-        uses: openzim/docker-publish-action@v7
+        uses: openzim/docker-publish-action@v9
         with:
           image-name: openzim/wp1_selection_tools
           registries: ghcr.io
