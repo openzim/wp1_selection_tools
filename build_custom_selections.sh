@@ -93,7 +93,7 @@ then
     $LIST_LANG_LINKS_PATH --host=en.wikipedia.org --path=w --readFromStdin --language=ja --language=as --language=bn --language=gu --language=hi \
                           --language=kn --language=ml --language=de --language=bpy --language=mr --language=lo --language=or --language=pa \
                           --language=ta --language=te --language=ur --language=fa --language=fr --language=zh --language=pt --language=ar \
-                          --language=es --language=it < "$CUSTOM_DIR/medicine.tsv" > "$DATA/en.needed/medicine.langlinks.tsv"
+                          --language=es --language=it --language=uk --language=ru < "$CUSTOM_DIR/medicine.tsv" > "$DATA/en.needed/medicine.langlinks.tsv"
 
     # Ray Charles
     $PERL $LIST_CATEGORY_SCRIPT_PATH --path=w --host=en.wikipedia.org --category="Ray_Charles" --namespace=0 --explorationDepth=3 | sort -u > "$CUSTOM_DIR/ray_charles.tsv"
