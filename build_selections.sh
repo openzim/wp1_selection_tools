@@ -23,7 +23,7 @@ WP1_DB_HOST=tools.db.svc.eqiad.wmflabs
 WP1_DB=s51114__enwp10
 DB_HOST=${WIKI_LANG_SHORT}wiki.analytics.db.svc.eqiad.wmflabs
 DB=${WIKI_LANG_SHORT}wiki_p
-MYSQL='mysql --defaults-file=~/replica.my.cnf --ssl-mode=DISABLED --compress --execute'
+MYSQL='mysql --defaults-file=~/replica.my.cnf --ssl-mode=DISABLED --compression-algorithms=zlib --execute'
 $MYSQL "SELECT 42 FROM page LIMIT 1" -N -h ${DB_HOST} ${DB} > /dev/null || \
     ( echo "Unable to connect to DB host '${DB_HOST}' and DB '${DB}'" && exit 1 )
 
