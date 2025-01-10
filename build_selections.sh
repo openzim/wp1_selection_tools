@@ -194,7 +194,7 @@ do
     UPPER_LIMIT=$((UPPER_LIMIT + 10000))
     echo "   from pl_from from $LOWER_LIMIT to $UPPER_LIMIT..."
     $MYSQL \
-        "SELECT pl_from, pl_title FROM pagelinks WHERE pl_namespace = 0 AND pl_from_namespace = 0 AND pl_from >= $LOWER_LIMIT AND pl_from < $UPPER_LIMIT" \
+        "SELECT pl_from, lt_title AS pl_title FROM pagelinks LEFT JOIN linktarget ON pl_target_id = lt_id WHERE lt_namespace = 0 AND pl_from_namespace = 0 AND pl_from >= $LOWER_LIMIT AND pl_from < $UPPER_LIMIT" \
         -N -h ${DB_HOST} ${DB} >> $PAGELINKS
     NEW_SIZE=$(ls -la $PAGELINKS 2> /dev/null | cut -d " " -f5)
 done
