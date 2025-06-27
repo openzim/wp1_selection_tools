@@ -74,7 +74,7 @@ then
     echo "Wikipedia:Books/Endocrine disease" >> "$CUSTOM_DIR/medicine.tsv"
     echo "Wikipedia:Books/Eye diseases" >> "$CUSTOM_DIR/medicine.tsv"
     echo "Wikipedia:Books/General surgery" >>  "$CUSTOM_DIR/medicine.tsv"
-    echo "Wikipedia:Books/Heart disease" >>  "$CUSTOM_DIR/medicine.tsv"
+    echo "Wikipedia:WikiProject_Medicine/Books/Heart_disease" >>  "$CUSTOM_DIR/medicine.tsv"
     echo "Wikipedia:Books/Infectious disease" >> "$CUSTOM_DIR/medicine.tsv"
     echo "Wikipedia:Books/Medications" >> "$CUSTOM_DIR/medicine.tsv"
     echo "Wikipedia:Books/Men's health" >> "$CUSTOM_DIR/medicine.tsv"
@@ -82,7 +82,7 @@ then
     echo "Wikipedia:Books/Orthopedics" >>  "$CUSTOM_DIR/medicine.tsv"
     echo "Wikipedia:Books/Mental health" >> "$CUSTOM_DIR/medicine.tsv"
     echo "Wikipedia:Books/Skin diseases" >> "$CUSTOM_DIR/medicine.tsv"
-    echo "Wikipedia:Books/Women's health" >> "$CUSTOM_DIR/medicine.tsv"
+    echo "Wikipedia:WikiProject_Women's_Health/Books/Women's_health" >> "$CUSTOM_DIR/medicine.tsv"
     $LIST_LANG_LINKS_PATH --host=en.wikipedia.org --path=w --readFromStdin --language=ja --language=as --language=bn --language=gu --language=hi \
                           --language=kn --language=ml --language=de --language=bpy --language=mr --language=lo --language=or --language=pa \
                           --language=ta --language=te --language=ur --language=fa --language=fr --language=zh --language=pt --language=ar \
