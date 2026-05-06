@@ -67,23 +67,11 @@ Tools
 Download
 --------
 
-You can download the output of that scripts directly from
-download.kiwix.org/wp1/ using FTP, HTTP(s) or rsync.
+You can download the output of that scripts
+directly from https://wp1.download.openzim.org/.
 
-You might be interested by downloading only the last version, here is
-a small command (based on rsync) to retrieve the right directory name.
-
-```bash
-for ENTRY in $(rsync --recursive --list-only download.kiwix.org::download.kiwix.org/wp1/ | tr -s ' ' | cut -d ' ' -f5 | grep wiki | grep -v '/' | sort -r)
-do
-    RADICAL=`echo $ENTRY | sed 's/_20[0-9][0-9]-[0-9][0-9]//g'`;
-    if [[ $LAST != $RADICAL ]]
-    then
-        echo $ENTRY
-        LAST=$RADICAL
-    fi
-done
-```
+There are redirections to the latest version or each file/folder:
+just remove the `_YY-DD` suffix from the path.
 
 VPS
 ---
